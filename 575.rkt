@@ -3,6 +3,11 @@
 (provide distribute-candies)
 
 (define (distribute-candies candyType)
+  (let ([limit (quotient (length candyType) 2)]
+        [type-count (set-count (list->set candyType))])
+    (min limit type-count)))
+
+(define (distribute-candies-v0 candyType)
   (let ([limit (quotient (length candyType) 2)])
     (let iter ([lst candyType]
                [type-count (make-immutable-hash)])
