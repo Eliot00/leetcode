@@ -1,0 +1,23 @@
+给你一个整数数组 arr 和两个整数 k 和 threshold 。
+
+请你返回长度为 k 且平均值大于等于 threshold 的子数组数目。
+
+#+BEGIN_SRC racket
+#lang racket
+
+(define/contract (num-of-subarrays arr k threshold)
+  (-> (listof exact-integer?) exact-integer? exact-integer? exact-integer?)
+  (let ([real-arr (list->vector arr)]
+        [k-threshold (* k threshold)])
+    (let loop ([i 0]
+               [sum 0]
+               [ans 0])
+      (if (< i (vector-length real-arr))
+        (let ([pre-sum (+ sum (vector-ref real-arr i))])
+          (if (< i (sub1 k))
+            (loop (add1 i) pre-sum ans)
+            (loop (add1 i) (- pre-sum (vector-ref real-arr (add1 (- i k)))) (if (< pre-sum k-threshold) ans (add1 ans)))))
+        ans))))
+
+(num-of-subarrays '(2 2 2 2 5 5 5 8) 3 4)
+#+END_SRC
