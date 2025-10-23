@@ -92,3 +92,53 @@ k是子串長度，答案不可能超過子串長度，當答案等於k時提前
 | leetcode  | 3 |   2 |
 | rhythms   | 4 |   0 |
 | tryhard   | 4 |   1 |
+
+*** [[https://leetcode.cn/problems/maximum-average-subarray-i/][643. 子数组最大平均数 I]]
+
+**** 思路
+
+k是固定的，要求平均值最大，那麼實際上只要找出最大的和，最後再除以k算平均值就可以
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (find-max-average nums k)
+  (let loop ((max-sum -inf.0)
+             (s 0)
+             (i 0))
+    (if (< i (vector-length nums))
+        (let ((new-s (+ s (vector-ref nums i)))
+              (window-not-full? (< i (- k 1))))
+          (if window-not-full?
+              (loop max-sum new-s (+ i 1)) ; 窗口未滿
+              (loop
+               (max max-sum new-s) ; 更新最大和
+               (- new-s (vector-ref nums (+ (- i k) 1))) ; 左端點離開窗口
+               (+ i 1)))) ; 右移窗口
+      (/ max-sum k))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session :results table
+(list (list "nums" "k" "ans")
+      (list "(1,12,-5,-6,50,3)" 4 (find-max-average (vector 1 12 -5 -6 50 3) 4))
+      (list "(5)" 1 (find-max-average (vector 5) 1))
+      (list "(1,2,3,4,5)" 2 (find-max-average (vector 1 2 3 4 5) 2))
+      (list "(0,1,1,3,3)" 4 (find-max-average (vector 0 1 1 3 3) 4))
+      (list "(-1,-2,-3,-4,-5)" 3 (find-max-average (vector -1 -2 -3 -4 -5) 3))
+      (list "(1,2,3,4,5,6,7,8,9,10)" 5 (find-max-average (vector 1 2 3 4 5 6 7 8 9 10) 5)))
+#+END_SRC
+
+#+RESULTS:
+| nums                   | k |   ans |
+| (1,12,-5,-6,50,3)      | 4 | 12.75 |
+| (5)                    | 1 |   5.0 |
+| (1,2,3,4,5)            | 2 |   4.5 |
+| (0,1,1,3,3)            | 4 |   2.0 |
+| (-1,-2,-3,-4,-5)       | 3 |  -2.0 |
+| (1,2,3,4,5,6,7,8,9,10) | 5 |   8.0 |
+
