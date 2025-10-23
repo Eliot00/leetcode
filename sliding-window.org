@@ -3,6 +3,13 @@
 
 *** [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目]]
 
+**** 思路
+1. 判斷當前右指針指向的字符是否是元音，更新局部計數。如果窗口大小不足，右移指針，重複第1步
+2. 更新答案 ~ans = max(ans, local_count)~
+3. 左指針右移，更新局部計數（是元音，減一，否則不變）
+
+**** 解
+
 #+BEGIN_SRC scheme :session
 (define (max-vowels s k)
   (define (vowel? c)
@@ -37,6 +44,7 @@
 : 3
 
 **** 優化
+
 k是子串長度，答案不可能超過子串長度，當答案等於k時提前退出
 
 #+BEGIN_SRC scheme :session
