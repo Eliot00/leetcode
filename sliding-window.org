@@ -1,0 +1,37 @@
+* 滑動窗口
+** 定長窗口
+
+*** [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目
+]]
+#+BEGIN_SRC scheme :session
+(define (max-vowels s k)
+  (define (vowel? c)
+    (member c '(#\a #\e #\i #\o #\u)))
+
+  (let loop ((ans 0)
+             (vowel 0)
+             (index 0))
+    (if (< index (string-length s))
+      (let* ((window-not-full? (< index (- k 1)))
+             (current-vowel? (vowel? (string-ref s index)))
+             (new-vowel (if current-vowel? (+ vowel 1) vowel)))
+        (if window-not-full?
+          (loop ans new-vowel (+ index 1))
+          (loop
+            (max ans new-vowel)
+            (if (vowel? (string-ref s (+ (-  index k) 1))) (- new-vowel 1) new-vowel)
+            (+ index 1))))
+      ans)))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(max-vowels "abciiidef" 3)
+#+END_SRC
+
+#+RESULTS:
+: 3
