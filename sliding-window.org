@@ -1,8 +1,8 @@
 * 滑動窗口
 ** 定長窗口
 
-*** [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目
-]]
+*** [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目]]
+
 #+BEGIN_SRC scheme :session
 (define (max-vowels s k)
   (define (vowel? c)
@@ -35,3 +35,52 @@
 
 #+RESULTS:
 : 3
+
+**** 優化
+k是子串長度，答案不可能超過子串長度，當答案等於k時提前退出
+
+#+BEGIN_SRC scheme :session
+(define (max-vowels-v2 s k)
+  (define (vowel? c)
+    (member c '(#\a #\e #\i #\o #\u)))
+
+  (let loop ((ans 0)
+             (vowel 0)
+             (index 0))
+    (if (< index (string-length s))
+      (let* ((left (+ (- index k) 1))
+             (window-not-full? (< left 0))
+             (current-vowel? (vowel? (string-ref s index)))
+             (new-vowel (if current-vowel? (+ vowel 1) vowel)))
+        (if window-not-full?
+          (loop ans new-vowel (+ index 1))
+          (let ((new-ans (max ans new-vowel)))
+            (if (eq? new-ans k)
+                new-ans
+                (loop new-ans
+                      (if (vowel? (string-ref s left)) (- new-vowel 1) new-vowel)
+                      (+ index 1))))))
+      ans)))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session :results table
+(list (list "string" "k" "ans")
+      (list "abciiidef" 3 (max-vowels-v2 "abciiidef" 3))
+      (list "aeiou" 2 (max-vowels-v2 "aeiou" 2))
+      (list "leetcode" 3 (max-vowels-v2 "leetcode" 3))
+      (list "rhythms" 4 (max-vowels-v2 "rhythms" 4))
+      (list "tryhard" 4 (max-vowels-v2 "tryhard" 4)))
+#+END_SRC
+
+#+RESULTS:
+| string    | k | ans |
+| abciiidef | 3 |   3 |
+| aeiou     | 2 |   2 |
+| leetcode  | 3 |   2 |
+| rhythms   | 4 |   0 |
+| tryhard   | 4 |   1 |
