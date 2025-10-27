@@ -1,4 +1,12 @@
 * 滑動窗口
+
+#+BEGIN_SRC scheme :session
+(load "test.scm")
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
 ** 定長窗口
 
 *** [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目]]
@@ -215,9 +223,61 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 
 測試：
 
-#+BEGIN_SRC scheme :session
-(minimum-recolors "WBBWWBBWBW" 7)
+#+BEGIN_SRC scheme :session :results table
+(test minimum-recolors
+      '((("WBBWWBBWBW" 7) . 3)
+        (("WBWBBBW" 2) . 0)))
 #+END_SRC
 
 #+RESULTS:
-: 3
+| (WBBWWBBWBW 7) | 3 | 3 |
+| (WBWBBBW 2)    | 0 | 0 |
+
+*** [[https://leetcode.cn/problems/maximum-points-you-can-obtain-from-cards/][1423. 可获得的最大点数]]
+
+**** 思路
+題目要求只能從數組開頭或末尾取，反過來想，就是要找一個大小爲n-k的定長窗口，窗口內數的和最小
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (max-score cardPoints k)
+  (let* ((len (length cardPoints))
+         (m (- len k)))
+    (let loop ((min-sum 0)
+               (sum     0)
+               (rest    cardPoints)
+               (window  cardPoints)
+               (right   0))
+      (if (< right len)
+          (if (< right m)
+              (loop (+ min-sum (car window))
+                    (+ sum (car window))
+                    rest
+                    (cdr window)
+                    (+ right 1))
+              (let ((new-sum (- (+ sum (car window)) (car rest))))
+                (loop (min min-sum new-sum)
+                      new-sum
+                      (cdr rest)
+                      (cdr window)
+                      (+ right 1))))
+          (- (apply + cardPoints) min-sum)))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(test max-score
+      '((((1 2 3 4 5 6 1) 3) . 12)
+        (((2 2 2) 2) . 4)
+        (((9 7 7 9 7 7 9) 7) . 55)))
+#+END_SRC
+
+#+RESULTS:
+| ((1 2 3 4 5 6 1) 3) | 12 | 12 |
+| ((2 2 2) 2)         |  4 |  4 |
+| ((9 7 7 9 7 7 9) 7) | 55 | 55 |
