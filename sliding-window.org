@@ -336,3 +336,53 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 #+RESULTS:
 : '(((#(1 2 3 4 5 6 1) 3) 12 12) ((#(2 2 2) 2) 4 4) ((#(9 7 7 9 7 7 9) 7) 55 55))
 
+*** [[https://leetcode.cn/problems/k-radius-subarray-averages/][2090. 半径为 k 的子数组平均值]]
+
+**** 思路
+理論上可以一次遍歷
+
+答案的頭尾k個值都是-1，先構建出大小 =k * 2 + 1= 的窗口，右端點i前進更新答案第 =i - k= 位
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (get-averages nums k)
+  (let* ((len (vector-length nums))
+         (win-size (+ (* k 2) 1))
+         (ans (make-vector len -1)))
+    (let loop ((index 0)
+               (pre-sum 0))
+      (if (< index len)
+          (let ((sum (+ pre-sum (vector-ref nums index)))) ; 右側進窗口，記錄和
+            (if (< index (* k 2))
+                (loop (+ index 1) sum) ; 構建窗口
+                (begin
+                  (vector-set! ans (- index k) (/ sum win-size)) ; 更新答案
+                  (loop (+ index 1)
+                        ;; 出窗口
+                        (- sum (vector-ref nums (- index (* k 2))))))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session :results output
+(display (get-averages
+          #(7 4 3 9 1 8 5 2 6) 3))
+(newline)
+(display (get-averages
+          #(100000) 0))
+(newline)
+(display (get-averages
+          #(8) 100000))
+(newline)
+#+END_SRC
+
+#+RESULTS:
+: #(-1 -1 -1 37/7 32/7 34/7 -1 -1 -1)
+: #(100000)
+: #(-1)
+
