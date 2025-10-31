@@ -475,3 +475,94 @@ grumpy爲0時，顧客一定滿意，老板使用控制技能，在minutes內不
 
 #+RESULTS:
 : #<unspecified>
+
+*** [[https://leetcode.cn/problems/defuse-the-bomb/description/][1652. 拆炸弹]]
+
+**** 思路
+
+數組最長100，理論上可以直接暴力解
+
+索引和k之間有個什麼聯繫，暫時不知道，先列出例子中所有的索引，試着找出關係
+
+n = 4, k = 3:
+
+| i | a | b | c |
+|---+---+---+---|
+| 0 | 1 | 2 | 3 |
+| 1 | 2 | 3 | 0 |
+| 2 | 3 | 0 | 1 |
+| 3 | 0 | 1 | 2 |
+
+看到循環數組，首先想到應該有模運算，可以發現， \(c = (i + k) \mod n\)
+或者也可以把a到c看作一個滑動窗口，從左往右滑動排序後表格如下：
+
+| window    | i（答案第i位） |
+|-----------+----------------|
+| (0, 1, 2) |              3 |
+| (1, 2, 3) |              0 |
+| (2, 3, 0) |              1 |
+| (3, 0, 1) |              2 |
+
+那在滑動過程中，能從右指針推出應該更新答案的第幾位嗎？可以的，按前面c也就是右指針和i的關係，做逆運算： \(i = (right - k) \mod n\)
+
+再看看題目裏例子三k = -2的情況，是否有不同
+
+n = 4, k = -2
+
+k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從左往右滑動
+
+| window    | i（答案第i位） |
+|-----------+----------------|
+| (0, 1)    |              2 |
+| (1, 2)    |              3 |
+| (2, 3)    |              0 |
+| (3, 0)    |              1 |
+
+因爲題目規定k爲負數時，算當前索引前k個數的和，所以右指針加1就是索引，但注意不能溢出，還是需要模運算： \(i = (right + 1) \mod n\)
+
+這樣一來問題就簡單了，除了k等於0時直接返回全0數組，其他情況只要維護一個長爲 =abs(k)= 的窗口，向右滑動，根據右端點索引和答案索引的關係，去更新相應的答案就可以了。
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (decrypt code k)
+  (let* ((n (vector-length code))
+         (ans (make-vector n 0))
+         (abs-k (abs k)))
+    (if (eq? k 0)
+        ans
+        (let loop ((sum 0)
+                   (right 0)
+                   (left 0))
+          (if (< left n)
+              ;; 進窗口
+              (let ((new-sum(+ sum (vector-ref code (modulo right n)))))
+                (if (< right (- abs-k 1))
+                    (loop new-sum
+                          (+ right 1)
+                          left) ; 先展開窗口
+                    (begin
+                      ;; 更新答案
+                      (vector-set! ans
+                                   (if (> k 0)
+                                       (modulo (- right k) n)
+                                       (modulo (+ right 1) n))
+                                   new-sum)
+                      ;; 出窗口
+                      (loop (- new-sum (vector-ref code left))
+                            (+ right 1)
+                            (+ left 1)))))
+              ans)))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(decrypt #(5 2 2 3 1) 3)
+#+END_SRC
+
+#+RESULTS:
+: #(7 6 9 8 9)
