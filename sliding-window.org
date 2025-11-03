@@ -566,3 +566,55 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 #+RESULTS:
 : #(7 6 9 8 9)
+
+** 不定長窗口
+
+*** [[https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/][3. 无重复字符的最长子串]]
+
+**** 思路
+
+和定長的不同，定長左指針移動，是因爲根據題目規定，有一個代表窗口大小的k值是固定的，需要一直維持左右指針之間的距離。在這一題裏，不能維持一個固定的窗口，但是當右指針下的值，使得窗口內字符出現重複了，左指針就應該右移了。
+
+考慮過scheme的哈希表用起來不是很舒服，而題目中聲明字符只會有英文字母、數字、符號和空格，理論上用一個128位的數組，表示上次這個ASCII字符出現的位置，應該是可以的。
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (length-of-longest-substring s)
+  (let ((last-seen (make-vector 128 -1))
+        (len (string-length s)))
+    (let loop ((left 0)
+               (right 0)
+               (ans 0))
+      (if (< right len)
+          (let* ((current-char (string-ref s right))
+                 ;; 字符轉成ASCII碼
+                 (char-ascii (char->integer current-char))
+                 (char-last-index (vector-ref last-seen char-ascii))
+                 ;; 如果有重複，左指針可以一步到位移動到重複字符後面
+                 (new-left (max left (+ char-last-index 1))))
+            ;; 右入窗口，更新last-seen
+            (vector-set! last-seen char-ascii right)
+            (loop new-left
+                  (+ right 1)
+                  ;; 更新答案
+                  (max ans (+ (- right new-left) 1))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session :results table
+(test length-of-longest-substring
+      '((("abcabcbb") . 3)
+        (("bbbbb") . 1)
+        (("pwwkew") . 3)))
+#+END_SRC
+
+#+RESULTS:
+| (abcabcbb) | 3 | 3 |
+| (bbbbb)    | 1 | 1 |
+| (pwwkew)   | 3 | 3 |
