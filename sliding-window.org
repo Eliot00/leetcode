@@ -618,3 +618,42 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 | (abcabcbb) | 3 | 3 |
 | (bbbbb)    | 1 | 1 |
 | (pwwkew)   | 3 | 3 |
+
+*** [[https://leetcode.cn/problems/longest-subarray-of-1s-after-deleting-one-element/description/][1493. 删掉一个元素以后全为 1 的最长子数组]]
+
+**** 思路
+
+找最長的，最多一個零的窗口。最後必須刪除一個元素，right減left就是答案。
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (longest-subarray nums)
+  (let ((len (vector-length nums)))
+    (let loop ((last-zero -1) ; 記錄上一次出現的位置
+               (left 0)
+               (right 0)
+               (ans 0))
+      (if (< right len)
+          (let* ((current-zero? (eq? (vector-ref nums right) 0))
+                 (new-left (if current-zero?
+                               (max (+ last-zero 1) left)
+                               left)))
+            (loop (if current-zero? right last-zero)
+                  new-left
+                  (+ right 1)
+                  (max ans (- right new-left))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(longest-subarray #(0 1 1 1 0 1 1 0 1))
+#+END_SRC
+
+#+RESULTS:
+: 5
