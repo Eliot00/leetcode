@@ -657,3 +657,55 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 #+RESULTS:
 : 5
+
+*** [[https://leetcode.cn/problems/minimum-removals-to-balance-array/][3634. 使数组平衡的最少移除数目]]
+
+**** 思路
+排序一遍，找出最長且平衡的子數組，原數組長減子數組長就是答案
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (min-removal nums k)
+  (let* ((sorted (sort nums <))
+         (nums-len (vector-length sorted)))
+    (let loop ((left 0)
+               (right 0)
+               (max-save 0))
+      (if (< right nums-len)
+          (if (< (* k (vector-ref sorted left))
+                 (vector-ref sorted right))
+              (loop (+ left 1)
+                    right
+                    max-save)
+              (loop left
+                    (+ right 1)
+                    (max max-save (+ (- right left) 1))))
+          (- nums-len max-save)))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(min-removal #(2 1 5) 2)
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+#+BEGIN_SRC scheme :session
+(min-removal #(1 6 2 9) 3)
+#+END_SRC
+
+#+RESULTS:
+: 2
+
+#+BEGIN_SRC scheme :session
+(min-removal #(4 6) 2)
+#+END_SRC
+
+#+RESULTS:
+: 0
