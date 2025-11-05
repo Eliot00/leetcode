@@ -709,3 +709,101 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 #+RESULTS:
 : 0
+
+*** [[https://leetcode.cn/problems/fruit-into-baskets/][904. 水果成篮]]
+
+**** 思路
+實際就是要找一個最長的、最多包含兩種數字的子數組。
+
+如果右指針下出現了第三種類型，左指針怎麼移？設原右指針下類型是a，窗口內另有一個類型b，右指針右移一位新進入的數字是類型c，那麼左指針應該是移到窗口內​*最後一個b的位置加一*​。
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(use-modules (ice-9 match))
+
+(define (total-fruit fruits)
+  (let ((len (vector-length fruits)))
+    (define loop
+      (match-lambda*
+        ;; 右指針到達邊界，退出
+        ((_ _ _ _ _ (? (lambda (x) (>= x len)) right) ans) ans)
+        ;; 初始化
+        ((-1 -1 -1 -1 left right ans)
+         (loop (vector-ref fruits right)
+               right
+               -1
+               -1
+               left
+               (+ right 1)
+               (max ans (+ (- right left) 1))))
+        ((type-a index-a -1 -1 left right ans)
+         (let ((current (vector-ref fruits right)))
+           (if (eq? type-a current)
+               (loop type-a
+                     right
+                     -1
+                     -1
+                     left
+                     (+ right 1)
+                     (max ans (+ (- right left) 1)))
+               ;; 始終保持type-a是最新的類型
+               (loop current
+                     right
+                     type-a
+                     index-a
+                     left
+                     (+ right 1)
+                     (max ans (+ (- right left) 1))))))
+        ((type-a index-a type-b index-b left right ans)
+         (let ((current (vector-ref fruits right)))
+           (if (eq? current type-a)
+               (loop current
+                     right
+                     type-b
+                     index-b
+                     left
+                     (+ right 1)
+                     (max ans (+ (- right left) 1)))
+               (if (eq? current type-b)
+                   (loop type-b
+                         right
+                         type-a
+                         index-a
+                         left
+                         (+ right 1)
+                         (max ans (+ (- right left) 1)))
+                   ;; 第三種類型出現
+                   (loop current ; 保持type-a是最右的類型
+                         right
+                         type-a ; 舊的type-a可以更新到type-b
+                         index-a
+                         (+ index-b 1) ; 舊的type-b離開窗口，左指針移到最後一個舊type-b的右邊
+                         (+ right 1)
+                         (max ans (+ (- right (+ index-b 1)) 1)))))))))
+    (loop -1 -1 -1 -1 0 0 0)))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session
+(total-fruit #(1 2 1))
+#+END_SRC
+
+#+RESULTS:
+: 3
+
+#+BEGIN_SRC scheme :session
+(total-fruit #(0))
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+#+BEGIN_SRC scheme :session
+(total-fruit #(1 0))
+#+END_SRC
+
+#+RESULTS:
+: 2
