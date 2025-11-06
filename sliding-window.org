@@ -1,7 +1,9 @@
 * 滑動窗口
 
 #+BEGIN_SRC scheme :session
-(load "test.scm")
+(add-to-load-path ".")
+
+(use-modules (helper test))
 #+END_SRC
 
 #+RESULTS:
@@ -807,3 +809,51 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 #+RESULTS:
 : 2
+
+*** [[https://leetcode.cn/problems/maximum-erasure-value/description/][1695. 删除子数组的最大得分]]
+
+**** 思路
+保持子數組元素唯一，嘗試用哈希表
+
+**** 代碼
+嘗試用命令式的方法：
+
+#+BEGIN_SRC scheme :session
+(define (maximum-unique-subarray nums)
+  (let ((len (vector-length nums))
+        (record (make-hash-table))
+        (left 0)
+        (right 0)
+        (sum 0)
+        (ans 0))
+    (while (< right len)
+      (let ((current (vector-ref nums right)))
+        (while (hash-ref record current)
+          (hash-remove! record (vector-ref nums left))
+          (set! sum (- sum (vector-ref nums left)))
+          (set! left (1+ left)))
+        (hash-set! record current #t)
+        (set! sum (+ sum current))
+        (set! ans (max ans sum))
+        (set! right (1+ right))))
+    ans))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(maximum-unique-subarray #(4 2 4 5 6))
+#+END_SRC
+
+#+RESULTS:
+: 17
+
+#+BEGIN_SRC scheme :session
+(maximum-unique-subarray #(5 2 1 2 5 2 1 2 5))
+#+END_SRC
+
+#+RESULTS:
+: 8

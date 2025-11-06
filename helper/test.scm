@@ -1,3 +1,6 @@
+(define-module (helper test)
+  #:export (test))
+
 (define (test solution case-list)
   (map (lambda (case)
          (let* ((params-list (car case))
@@ -5,5 +8,3 @@
                 (actual (apply solution params-list)))
            (list params-list expect actual)))
        case-list))
-
-(provide 'test)
