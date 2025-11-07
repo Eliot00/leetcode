@@ -857,3 +857,45 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 #+RESULTS:
 : 8
+
+*** [[https://leetcode.cn/problems/length-of-longest-subarray-with-at-most-k-frequency/description/][2958. 最多 K 个重复元素的最长子数组]]
+
+**** 思路
+窗口內元素最多重複k次，右指針遇到重複，左指針應該移到將計數減一
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (max-subarray-length nums k)
+  (let ((len (vector-length nums))
+        (record (make-hash-table)))
+    (let loop ((left 0)
+               (right 0)
+               (ans 0))
+      (if (< right len)
+          (let ((current (vector-ref nums right)))
+            (if (eq? (hash-ref record current 0) k)
+                (let ((left-num (vector-ref nums left)))
+                  (hash-set! record left-num (- (hash-ref record left-num 0) 1))
+                  (loop (+ left 1)
+                        right
+                        ans))
+                (begin
+                  (hash-set! record current (+ (hash-ref record current 0) 1))
+                  (loop left
+                        (+ right 1)
+                        (max ans (+ (- right left) 1))))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(max-subarray-length #(1 2 3 1 2 3 1 2) 2)
+#+END_SRC
+
+#+RESULTS:
+: 6
