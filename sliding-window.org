@@ -899,3 +899,47 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 #+RESULTS:
 : 6
+
+*** [[https://leetcode.cn/problems/minimum-size-subarray-sum/description/][209. 长度最小的子数组]]
+
+**** 思路
+無非是將答案更新換成求最小，可以將答案初始化成數組長度加一
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (min-sub-array-len t nums)
+  (let* ((len (vector-length nums))
+         (impossible (+ len 1)))
+    (let loop ((left 0)
+               (right 0)
+               (sum 0)
+               (ans impossible))
+      (if (< right len)
+          (let* ((current (vector-ref nums right))
+                 (new-sum (+ sum current)))
+            (if (>= new-sum t)
+                (loop (+ left 1)
+                      right
+                      (- sum (vector-ref nums left))
+                      (min ans (+ (- right left) 1)))
+                (loop left
+                      (+ right 1)
+                      new-sum
+                      ans)))
+          (if (eq? ans impossible)
+              0
+              ans)))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(min-sub-array-len 7 #(2 3 1 2 4 3))
+#+END_SRC
+
+#+RESULTS:
+: 2
