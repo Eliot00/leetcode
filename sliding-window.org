@@ -943,3 +943,42 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 #+RESULTS:
 : 2
+
+*** [[https://leetcode.cn/problems/subarray-product-less-than-k/description/][713. 乘积小于 K 的子数组]]
+
+**** 思路
+右指針移動，滿足條件，計數加一，不滿足，左指針移動直到再次滿足
+
+**** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (num-subarray-product-less-than-k nums k)
+  (let ((len (vector-length nums)))
+    (if (<= k 1)
+        0 ; k <= 1直接返回0
+        (let ((left 0)
+              (right 0)
+              (product 1)
+              (count 0))
+          (while (< right len)
+            (let ((current (vector-ref nums right)))
+              (set! product (* product current))
+              (while (>= product k)
+                (set! product (/ product (vector-ref nums left)))
+                (set! left (+ left 1)))
+              (set! count (+ count (+ (- right left) 1)))
+              (set! right (+ right 1))))
+          count))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(num-subarray-product-less-than-k #(10 5 2 6) 100)
+#+END_SRC
+
+#+RESULTS:
+: 8
