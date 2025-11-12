@@ -1,0 +1,59 @@
+#+TITLE: 二分算法
+
+#+BEGIN_SRC scheme :session
+(add-to-load-path ".")
+
+(use-modules (helper test))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+* [[https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/description/][34. 在排序数组中查找元素的第一个和最后一个位置]]
+
+** 思路
+既然是排序數組，找最後一個位置就可以轉換爲找第一個大於target的數，結果減一就是最後一個位置了。
+
+** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (search-range nums target)
+  (let* ((len (vector-length nums))
+         (init-left 0)
+         (init-right (- len 1)))
+    (define (search left right target)
+      (if (<= left right)
+          (let* ((mid (+ left (quotient (- right left) 2)))
+                 (mid-val (vector-ref nums mid)))
+            (if (>= mid-val target)
+                (search left
+                        (- mid 1)
+                        target)
+                (search (+ mid 1)
+                        right
+                        target)))
+          left))
+    (let ((start (search init-left init-right target)))
+      (if (or (eq? start len)
+              (not (eq? (vector-ref nums start)
+                        target)))
+          '(-1 -1)
+          (let ((end (- (search init-left init-right (+ target 1)) 1)))
+            (list start end))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(test search-range
+      '(((#(5 7 7 8 8 10) 8) . '(3 4))
+        ((#(5 7 7 8 8 10) 6) . '(-1 -1))
+        ((#() 0) . '(-1 -1))))
+
+#+END_SRC
+
+#+RESULTS:
+: '(((#(5 7 7 8 8 10) 8) (quote (3 4)) (3 4)) ((#(5 7 7 8 8 10) 6) (quote (-1 -1)) (-1 -1)) ((#() 0) (quote (-1 -1)) (-1 -1)))

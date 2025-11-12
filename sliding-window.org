@@ -1,4 +1,4 @@
-* 滑動窗口
+#+TITLE: 滑動窗口
 
 #+BEGIN_SRC scheme :session
 (add-to-load-path ".")
@@ -9,16 +9,16 @@
 #+RESULTS:
 : #<unspecified>
 
-** 定長窗口
+* 定長窗口
 
-*** [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目]]
+** [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目]]
 
 **** 思路
 1. 判斷當前右指針指向的字符是否是元音，更新局部計數。如果窗口大小不足，右移指針，重複第1步
 2. 更新答案 ~ans = max(ans, local_count)~
 3. 左指針右移，更新局部計數（是元音，減一，否則不變）
 
-**** 解
+*** 解
 
 #+BEGIN_SRC scheme :session
 (define (max-vowels s k)
@@ -53,7 +53,7 @@
 #+RESULTS:
 : 3
 
-**** 優化
+*** 優化
 
 k是子串長度，答案不可能超過子串長度，當答案等於k時提前退出
 
@@ -103,13 +103,13 @@ k是子串長度，答案不可能超過子串長度，當答案等於k時提前
 | rhythms   | 4 |   0 |
 | tryhard   | 4 |   1 |
 
-*** [[https://leetcode.cn/problems/maximum-average-subarray-i/][643. 子数组最大平均数 I]]
+** [[https://leetcode.cn/problems/maximum-average-subarray-i/][643. 子数组最大平均数 I]]
 
-**** 思路
+*** 思路
 
 k是固定的，要求平均值最大，那麼實際上只要找出最大的和，最後再除以k算平均值就可以
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (find-max-average nums k)
@@ -152,12 +152,12 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 | (-1,-2,-3,-4,-5)       | 3 |  -2.0 |
 | (1,2,3,4,5,6,7,8,9,10) | 5 |   8.0 |
 
-*** [[https://leetcode.cn/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/][1343. 大小为 K 且平均值大于等于阈值的子数组数目]]
+** [[https://leetcode.cn/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/][1343. 大小为 K 且平均值大于等于阈值的子数组数目]]
 
-**** 思路
+*** 思路
 *入-更新-出*​三步走。可以不用每次算平均值，比較窗口和與threshold的k倍
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (num-of-subarrays arr k threshold)
@@ -194,12 +194,12 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 : Case 1: 3
 : Case 2: 6
 
-*** [[https://leetcode.cn/problems/minimum-recolors-to-get-k-consecutive-black-blocks/][2379. 得到 K 个黑块的最少涂色次数]]
+** [[https://leetcode.cn/problems/minimum-recolors-to-get-k-consecutive-black-blocks/][2379. 得到 K 个黑块的最少涂色次数]]
 
-**** 思路
+*** 思路
 本質上是數窗口內字符‘W’的數量，找出最少的窗口。但是比較得最小不太方便，那麼就反過來，找出‘B’最多的窗口。
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (minimum-recolors blocks k)
@@ -235,12 +235,12 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 | (WBBWWBBWBW 7) | 3 | 3 |
 | (WBWBBBW 2)    | 0 | 0 |
 
-*** [[https://leetcode.cn/problems/maximum-points-you-can-obtain-from-cards/][1423. 可获得的最大点数]]
+** [[https://leetcode.cn/problems/maximum-points-you-can-obtain-from-cards/][1423. 可获得的最大点数]]
 
-**** 思路
+*** 思路
 題目要求只能從數組開頭或末尾取，反過來想，就是要找一個大小爲n-k的定長窗口，窗口內數的和最小
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (max-score cardPoints k)
@@ -286,7 +286,7 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 | ((2 2 2) 2)         |  4 |  4 |
 | ((9 7 7 9 7 7 9) 7) | 55 | 55 |
 
-**** 思路二
+*** 思路二
 所有可能的取法：
 - 取前k個數
 - 前k-1個加後1個
@@ -300,7 +300,7 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 
 其實這也是滑動窗口，只是索引不是從小到大連續的
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (max-score-v2 cardPoints k)
@@ -338,14 +338,14 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 #+RESULTS:
 : '(((#(1 2 3 4 5 6 1) 3) 12 12) ((#(2 2 2) 2) 4 4) ((#(9 7 7 9 7 7 9) 7) 55 55))
 
-*** [[https://leetcode.cn/problems/k-radius-subarray-averages/][2090. 半径为 k 的子数组平均值]]
+** [[https://leetcode.cn/problems/k-radius-subarray-averages/][2090. 半径为 k 的子数组平均值]]
 
-**** 思路
+*** 思路
 理論上可以一次遍歷
 
 答案的頭尾k個值都是-1，先構建出大小 =k * 2 + 1= 的窗口，右端點i前進更新答案第 =i - k= 位
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (get-averages nums k)
@@ -388,12 +388,12 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 : #(100000)
 : #(-1)
 
-*** [[https://leetcode.cn/problems/minimum-discards-to-balance-inventory/description/][3679. 使库存平衡的最少丢弃次数]]
+** [[https://leetcode.cn/problems/minimum-discards-to-balance-inventory/description/][3679. 使库存平衡的最少丢弃次数]]
 
-**** 思路
+*** 思路
 需要一個哈希表計數，題目設定是到時間如果貨物類型超了就必須丟棄，所以不能在出窗口時直接減計數，一種方法是另用一個哈希表記錄是否被丟棄，另一種方法是到達上限時將arrivals當前值置爲0，這樣後續出窗口只會去改0的計數，不影響結果，但是需要改變原始的arrivals，這裏用方法一。
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (min-arrivals-to-discard arrivals w m)
@@ -435,15 +435,15 @@ k是固定的，要求平均值最大，那麼實際上只要找出最大的和�
 #+RESULTS:
 : '(((#(1 2 1 3 1) 4 2) 0 0) ((#(1 2 3 3 3 4) 3 2) 1 1))
 
-*** [[https://leetcode.cn/problems/grumpy-bookstore-owner/description/][1052. 爱生气的书店老板]]
-**** 思路
+** [[https://leetcode.cn/problems/grumpy-bookstore-owner/description/][1052. 爱生气的书店老板]]
+*** 思路
 控制生氣的時間應該要留給顧客數最大的區間，但是老板不是每一分鐘都生氣，也許剛好人最多的區間沒有生氣
 
 按滑動窗口的思路，維護minutes窗口，區間內顧客數加上區間外grumpy爲0的顧客數，取最大，但要想方法不能一直重複算區間外的顧客數
 
 grumpy爲0時，顧客一定滿意，老板使用控制技能，在minutes內不生氣，只會使結果加上grumpy爲1對應的顧客數，那麼如果先算一遍grumpy爲0的顧客數，再滑動窗口，找出grumpy爲1的顧客數最多的窗口，加起來就得到結果。
 
-**** 代碼
+*** 代碼
 
 實作可以不用先遍歷一次求在不控制情緒情況下的顧客和，因爲只需要在最後用到這個值，在滑動窗口的同時累加就可以
 
@@ -478,9 +478,9 @@ grumpy爲0時，顧客一定滿意，老板使用控制技能，在minutes內不
 #+RESULTS:
 : #<unspecified>
 
-*** [[https://leetcode.cn/problems/defuse-the-bomb/description/][1652. 拆炸弹]]
+** [[https://leetcode.cn/problems/defuse-the-bomb/description/][1652. 拆炸弹]]
 
-**** 思路
+*** 思路
 
 數組最長100，理論上可以直接暴力解
 
@@ -524,7 +524,7 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 
 這樣一來問題就簡單了，除了k等於0時直接返回全0數組，其他情況只要維護一個長爲 =abs(k)= 的窗口，向右滑動，根據右端點索引和答案索引的關係，去更新相應的答案就可以了。
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (decrypt code k)
@@ -569,17 +569,17 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 #+RESULTS:
 : #(7 6 9 8 9)
 
-** 不定長窗口
+* 不定長窗口
 
-*** [[https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/][3. 无重复字符的最长子串]]
+** [[https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/][3. 无重复字符的最长子串]]
 
-**** 思路
+*** 思路
 
 和定長的不同，定長左指針移動，是因爲根據題目規定，有一個代表窗口大小的k值是固定的，需要一直維持左右指針之間的距離。在這一題裏，不能維持一個固定的窗口，但是當右指針下的值，使得窗口內字符出現重複了，左指針就應該右移了。
 
 考慮過scheme的哈希表用起來不是很舒服，而題目中聲明字符只會有英文字母、數字、符號和空格，理論上用一個128位的數組，表示上次這個ASCII字符出現的位置，應該是可以的。
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (length-of-longest-substring s)
@@ -621,13 +621,13 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 | (bbbbb)    | 1 | 1 |
 | (pwwkew)   | 3 | 3 |
 
-*** [[https://leetcode.cn/problems/longest-subarray-of-1s-after-deleting-one-element/description/][1493. 删掉一个元素以后全为 1 的最长子数组]]
+** [[https://leetcode.cn/problems/longest-subarray-of-1s-after-deleting-one-element/description/][1493. 删掉一个元素以后全为 1 的最长子数组]]
 
-**** 思路
+*** 思路
 
 找最長的，最多一個零的窗口。最後必須刪除一個元素，right減left就是答案。
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (longest-subarray nums)
@@ -660,12 +660,12 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 #+RESULTS:
 : 5
 
-*** [[https://leetcode.cn/problems/minimum-removals-to-balance-array/][3634. 使数组平衡的最少移除数目]]
+** [[https://leetcode.cn/problems/minimum-removals-to-balance-array/][3634. 使数组平衡的最少移除数目]]
 
-**** 思路
+*** 思路
 排序一遍，找出最長且平衡的子數組，原數組長減子數組長就是答案
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (min-removal nums k)
@@ -712,14 +712,14 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 #+RESULTS:
 : 0
 
-*** [[https://leetcode.cn/problems/fruit-into-baskets/][904. 水果成篮]]
+** [[https://leetcode.cn/problems/fruit-into-baskets/][904. 水果成篮]]
 
-**** 思路
+*** 思路
 實際就是要找一個最長的、最多包含兩種數字的子數組。
 
 如果右指針下出現了第三種類型，左指針怎麼移？設原右指針下類型是a，窗口內另有一個類型b，右指針右移一位新進入的數字是類型c，那麼左指針應該是移到窗口內​*最後一個b的位置加一*​。
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (use-modules (ice-9 match))
@@ -810,12 +810,12 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 #+RESULTS:
 : 2
 
-*** [[https://leetcode.cn/problems/maximum-erasure-value/description/][1695. 删除子数组的最大得分]]
+** [[https://leetcode.cn/problems/maximum-erasure-value/description/][1695. 删除子数组的最大得分]]
 
-**** 思路
+*** 思路
 保持子數組元素唯一，嘗試用哈希表
 
-**** 代碼
+*** 代碼
 嘗試用命令式的方法：
 
 #+BEGIN_SRC scheme :session
@@ -858,12 +858,12 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 #+RESULTS:
 : 8
 
-*** [[https://leetcode.cn/problems/length-of-longest-subarray-with-at-most-k-frequency/description/][2958. 最多 K 个重复元素的最长子数组]]
+** [[https://leetcode.cn/problems/length-of-longest-subarray-with-at-most-k-frequency/description/][2958. 最多 K 个重复元素的最长子数组]]
 
-**** 思路
+*** 思路
 窗口內元素最多重複k次，右指針遇到重複，左指針應該移到將計數減一
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (max-subarray-length nums k)
@@ -900,12 +900,12 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 #+RESULTS:
 : 6
 
-*** [[https://leetcode.cn/problems/minimum-size-subarray-sum/description/][209. 长度最小的子数组]]
+** [[https://leetcode.cn/problems/minimum-size-subarray-sum/description/][209. 长度最小的子数组]]
 
-**** 思路
+*** 思路
 無非是將答案更新換成求最小，可以將答案初始化成數組長度加一
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (min-sub-array-len t nums)
@@ -944,12 +944,12 @@ k是負數，但是窗口長度（或寬度）肯定只能是2，還是一樣從
 #+RESULTS:
 : 2
 
-*** [[https://leetcode.cn/problems/subarray-product-less-than-k/description/][713. 乘积小于 K 的子数组]]
+** [[https://leetcode.cn/problems/subarray-product-less-than-k/description/][713. 乘积小于 K 的子数组]]
 
-**** 思路
+*** 思路
 右指針移動，滿足條件，計數加一，不滿足，左指針移動直到再次滿足
 
-**** 代碼
+*** 代碼
 
 #+BEGIN_SRC scheme :session
 (define (num-subarray-product-less-than-k nums k)
