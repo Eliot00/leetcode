@@ -3,3 +3,4 @@
 ** 題單
 
 - [[./sliding-window.org][滑動窗口]]
+- [[./binary-search.org][二分算法]]
