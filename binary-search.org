@@ -103,3 +103,34 @@
 
 #+RESULTS:
 : 4
+
+* [[https://leetcode.cn/problems/binary-search/description/][704. 二分查找]]
+
+** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (search nums target)
+  (let ((len (vector-length nums)))
+    (let loop ((left 0)
+               (right (- len 1)))
+      (if (<= left right)
+          (let* ((mid (+ left (quotient (- right left) 2)))
+                 (mid-val (vector-ref nums mid)))
+            (cond
+             ((< mid-val target) (loop (+ mid 1) right))
+             ((> mid-val target) (loop left (- right 1)))
+             (else mid)))
+          -1))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(search #(-1 0 3 5 9 12) 2)
+#+END_SRC
+
+#+RESULTS:
+: -1
