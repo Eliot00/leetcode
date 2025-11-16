@@ -134,3 +134,36 @@
 
 #+RESULTS:
 : -1
+
+* [[https://leetcode.cn/problems/find-smallest-letter-greater-than-target/description/][744. 寻找比目标字母大的最小字母]]
+
+** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (next-greatest-letter letters target)
+  (let ((len (vector-length letters)))
+    (if (char<=? (vector-ref letters (- len 1))
+                 target)
+        (vector-ref letters 0)
+        (let search ((left 0)
+                     (right (- len 1)))
+          (if (< left right)
+              (let* ((mid (+ left (quotient (- right left) 2)))
+                     (mid-val (vector-ref letters mid)))
+                (if (char>? mid-val target)
+                    (search left mid)
+                    (search (+ mid 1) right)))
+              (vector-ref letters left))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(next-greatest-letter #(#\c #\f #\j) #\j)
+#+END_SRC
+
+#+RESULTS:
+: #\c
