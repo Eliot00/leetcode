@@ -167,3 +167,36 @@
 
 #+RESULTS:
 : #\c
+
+* [[https://leetcode.cn/problems/maximum-count-of-positive-integer-and-negative-integer/description/][2529. 正整数和负整数的最大计数]]
+
+** 思路
+
+找第一個大於等於0的數，這個數的左邊都是負數，這個數的索引等於負數數目；再找第一個大於0的數，這個數及其右邊的數都是正數，數組長減索引等於正數數量。
+
+** 代碼
+
+#+BEGIN_SRC scheme :session
+(define (maximum-count nums)
+  (let ((neg (lower-bound nums 0))
+        (pos (- (vector-length nums)
+                (lower-bound nums 1))))
+    (max neg pos)))
+
+(define (lower-bound nums target)
+  (let ((len (vector-length nums)))
+    (let search ((left 0)
+                 (right (- len 1)))
+      (if (<= left right)
+          (let* ((mid (+ left (quotient (- right left) 2)))
+                 (mid-val (vector-ref nums mid)))
+            (if (>= mid-val target)
+                (search left
+                        (- mid 1))
+                (search (+ mid 1)
+                        right)))
+          left))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
