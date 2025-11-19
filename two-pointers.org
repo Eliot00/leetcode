@@ -1,0 +1,27 @@
+#+TITLE: 雙指針
+
+* [[https://leetcode.cn/problems/reverse-string/][344. 反转字符串]]
+
+#+BEGIN_SRC python :session
+def reverse_string(s):
+    left = 0
+    right = len(s) - 1
+    while left < right:
+        temp = s[left]
+        s[left] = s[right]
+        s[right] = temp
+        left += 1
+        right -= 1
+#+END_SRC
+
+#+RESULTS:
+: None
+
+#+BEGIN_SRC python :session
+s = ["H","a","n","n","a","h"]
+reverse_string(s)
+s
+#+END_SRC
+
+#+RESULTS:
+| h | a | n | n | a | H |
