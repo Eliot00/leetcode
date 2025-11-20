@@ -25,3 +25,26 @@ s
 
 #+RESULTS:
 | h | a | n | n | a | H |
+
+* [[https://leetcode.cn/problems/reverse-vowels-of-a-string/][345. 反转字符串中的元音字母]]
+
+在上一题的基础上，加一个元音判断
+
+#+BEGIN_SRC python
+def reverse_vowels(self, s: str) -> str:
+    l, r = 0, len(s) - 1
+    chars = list(s)
+    vowels = set('aeiouAEIOU')
+
+    while l < r:
+        if s[l] not in vowels:
+            l += 1
+        elif s[r] not in vowels:
+            r -= 1
+        else:
+            chars[l], chars[r] = chars[r], chars[l]
+            l += 1
+            r -= 1
+
+    return ''.join(chars)
+#+END_SRC
