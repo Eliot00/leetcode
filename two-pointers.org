@@ -62,3 +62,46 @@ def reverse_submatrix(grid, x, y, k):
             bottom -= 1
     return grid
 #+END_SRC
+
+* [[https://leetcode.cn/problems/minimum-length-of-string-after-deleting-similar-ends/description/][1750. 删除字符串两端相同字符后的最短长度]]
+
+不能相交，长度1直接返回，left < right
+前缀后缀要所有字符相同
+
+#+BEGIN_SRC python :session
+def minimum_length(s):
+    left, right = 0, len(s) - 1
+    while left < right and s[left] == s[right]:
+        c = s[left]
+        while left <= right and s[left] == c:
+            left += 1
+        while left <= right and s[right] == c:
+            right -= 1
+    return right - left + 1
+#+END_SRC
+
+#+RESULTS:
+: None
+
+测试：
+
+#+BEGIN_SRC python :session
+minimum_length("ca")
+#+END_SRC
+
+#+RESULTS:
+: 2
+
+#+BEGIN_SRC python :session
+minimum_length("cabaabac")
+#+END_SRC
+
+#+RESULTS:
+: 0
+
+#+BEGIN_SRC python :session
+minimum_length("aabccabba")
+#+END_SRC
+
+#+RESULTS:
+: 3
