@@ -105,3 +105,59 @@ minimum_length("aabccabba")
 
 #+RESULTS:
 : 3
+
+* [[https://leetcode.cn/problems/watering-plants-ii/][2105. 给植物浇水 II]]
+
+#+BEGIN_SRC python :session
+def minimum_refill(plants, capacity_a, capacity_b):
+    ans = 0
+
+    # a b 当前水量
+    a = capacity_a
+    b = capacity_b
+
+    # a b 当前位置
+    left = 0
+    right = len(plants) - 1
+
+    while left < right:
+        # a的水不够，补充水，答案加1
+        if a < plants[left]:
+            a = capacity_a
+            ans += 1
+        # a浇水，右移
+        a -= plants[left]
+        left += 1
+
+        # b的水不够，补水，答案加1
+        if b < plants[right]:
+            b = capacity_b
+            ans += 1
+        # b浇水，左移
+        b -= plants[right]
+        right -= 1
+
+    # a b 相遇，如果水不够答案再加1
+    if left == right and max(a, b) < plants[left]:
+        ans += 1
+    return ans
+#+END_SRC
+
+#+RESULTS:
+: None
+
+测试：
+
+#+BEGIN_SRC python :session
+minimum_refill([2,2,3,3], 5, 5)
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+#+BEGIN_SRC python :session
+minimum_refill([2,2,3,3], 3, 4)
+#+END_SRC
+
+#+RESULTS:
+: 2
