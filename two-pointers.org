@@ -161,3 +161,91 @@ minimum_refill([2,2,3,3], 3, 4)
 
 #+RESULTS:
 : 2
+
+* [[https://leetcode.cn/problems/squares-of-a-sorted-array/description/][977. 有序数组的平方]]
+
+最简单的方式就是直接map平方再排序，但是数组非递减的性质没有利用到。
+
+可以找出数组负数和非负数的分界位置，做归并排序。
+
+先写一个找出分界位置的函数：
+
+#+BEGIN_SRC python :session
+import bisect
+
+def find_boundary(nums):
+    first_non_negative = bisect.bisect_left(nums, 0)
+    return first_non_negative - 1, first_non_negative
+#+END_SRC
+
+#+RESULTS:
+: None
+
+测试一下：
+
+#+BEGIN_SRC python :session
+find_boundary([-4,-1,0,3,10])
+#+END_SRC
+
+#+RESULTS:
+| 1 | 2 |
+
+#+BEGIN_SRC python :session
+find_boundary([2, 8, 10])
+#+END_SRC
+
+#+RESULTS:
+| -1 | 0 |
+
+没有负数也没关系
+
+#+BEGIN_SRC python :session
+def sorted_squares(nums):
+    i, j = find_boundary(nums)
+    ans = []
+    while i >= 0 or j < len(nums):
+        # 先处理两个边界情况
+        if i < 0:
+            ans.append(nums[j] ** 2)
+            j += 1
+        elif j == len(nums):
+            ans.append(nums[i] ** 2)
+            i -= 1
+        else:
+            x = nums[i] ** 2
+            y = nums[j] ** 2
+            # 小的先进
+            if x < y:
+                ans.append(x)
+                i -= 1
+            else:
+                ans.append(y)
+                j += 1
+    return ans
+#+END_SRC
+
+#+RESULTS:
+: None
+
+如果把数组分成正负两个部分，负数部分的平方是非递增的，非负数部分的平方是非递减的。这样可以把双指针分别放在数组开头和结尾，相当于做归并排序，从右往左、从大到小更新答案。
+
+#+BEGIN_SRC python :session
+def sorted_squares(nums):
+    n = len(nums)
+    ans = [0] * n
+    left, right = 0, n - 1
+
+    # 倒着更新
+    for i in range(n - 1, -1, -1):
+        l_square = nums[left] ** 2
+        r_square = nums[right] ** 2
+        if l_square > r_square:
+            ans[i] = l_square
+            left += 1
+        else:
+            ans[i] = r_square
+            right -= 1
+    return ans
+#+END_SRC
+
+在循环过程中，还可以利用原数组有序的特性，省略重复的平方运算，比如比较​=abs(nums[left]) > nums[right]=​，或者​=-nums[left] > nums[right]=​。
