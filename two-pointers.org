@@ -249,3 +249,77 @@ def sorted_squares(nums):
 #+END_SRC
 
 在循环过程中，还可以利用原数组有序的特性，省略重复的平方运算，比如比较​=abs(nums[left]) > nums[right]=​，或者​=-nums[left] > nums[right]=​。
+
+* [[https://leetcode.cn/problems/bag-of-tokens/description/][948. 令牌放置]]
+
+直觉上，应该用最小的能量换分，直到能量不够，用分数换最大的能量。可以先从小到大排序令牌，再用相向双指针，能量够就从左边最小的令牌换分，能量不够就从右边最大的令牌换能量。
+
+#+BEGIN_SRC python :session
+def bag_of_tokens_score(tokens, power):
+    tokens.sort()
+    score = 0
+    left, right = 0, len(tokens) - 1
+    while left <= right:
+        # 能量足够，换取分数
+        if power >= tokens[left]:
+            power -= tokens[left]
+            left += 1
+            score += 1
+        # 能量不够，兑换能量
+        elif score > 0:
+            power += tokens[right]
+            right -= 1
+            score -= 1
+        # 能量和分数都不足，直接退出
+        else:
+            break
+    return score
+#+END_SRC
+
+#+RESULTS:
+: None
+
+测试：
+
+#+BEGIN_SRC python :session
+bag_of_tokens_score([200,100], 150) # 答案应该是1
+#+END_SRC
+
+#+RESULTS:
+: 0
+
+代码有漏洞，当能量不够的时候，不一定非得兑换能量。要想得分最高，最后一次操作必需是消耗能量换分，这个时候再用分换能量没有意义。
+
+#+BEGIN_SRC python :session
+def bag_of_tokens_score(tokens, power):
+    tokens.sort()
+    score = 0
+    left, right = 0, len(tokens) - 1
+    while left <= right:
+        # 能量足够，换取分数
+        if power >= tokens[left]:
+            power -= tokens[left]
+            left += 1
+            score += 1
+        # 能量不够，兑换能量，但要兑换后还能再获得分数
+        elif score > 0 and right > left and (power + tokens[right]) > tokens[left]:
+            power += tokens[right]
+            right -= 1
+            score -= 1
+        # 能量和分数都不足，直接退出
+        else:
+            break
+    return score
+#+END_SRC
+
+#+RESULTS:
+: None
+
+测试：
+
+#+BEGIN_SRC python :session
+bag_of_tokens_score([200,100], 150) # 答案应该是1
+#+END_SRC
+
+#+RESULTS:
+: 1
