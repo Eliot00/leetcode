@@ -323,3 +323,41 @@ bag_of_tokens_score([200,100], 150) # 答案应该是1
 
 #+RESULTS:
 : 1
+
+* [[https://leetcode.cn/problems/reverse-only-letters/][917. 仅仅反转字母]]
+
+#+BEGIN_SRC scheme :session
+(define (reverse-only-letters s)
+  (define (letter? c)
+    (or (char<=? #\a c #\z)
+        (char<=? #\A c #\Z)))
+  (let loop ((left 0)
+             (right (- (string-length s) 1)))
+    (if (< left right)
+        (let* ((left-letter? (letter? (string-ref s left)))
+               (right-letter? (letter? (string-ref s right)))
+               (swap? (and left-letter? right-letter?))
+               (left-offset (if left-letter? 0 1))
+               (right-offset (if right-letter? 0 1)))
+          (if swap?
+              (let ((temp (string-ref s left)))
+                (string-set! s left (string-ref s right))
+                (string-set! s right temp)
+                (loop (+ left 1)
+                      (- right 1)))
+              (loop (+ left left-offset)
+                    (- right right-offset))))
+        s)))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(reverse-only-letters (string-copy "ab-cd"))
+#+END_SRC
+
+#+RESULTS:
+: dc-ba
