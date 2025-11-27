@@ -361,3 +361,47 @@ bag_of_tokens_score([200,100], 150) # 答案应该是1
 
 #+RESULTS:
 : dc-ba
+
+* [[https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/][167. 两数之和 II - 输入有序数组]]
+
+#+BEGIN_SRC scheme :session
+(define (two-sum numbers target)
+  (let loop ((left 0)
+             (right (- (vector-length numbers) 1)))
+    (if (< left right)
+        (let ((sum (+ (vector-ref numbers left)
+                      (vector-ref numbers right))))
+          (cond
+           ((> sum target) (loop left (- right 1)))
+           ((< sum target) (loop (+ left 1) right))
+           (else (list left right))))
+        (list -1 -1))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(two-sum #(2 7 11 15) 9)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 |
+
+题目有个小陷阱，下标从1开始，只要最后返回的地方两个指针都加一就可以了
+
+#+BEGIN_SRC scheme
+(define (two-sum numbers target)
+  (let loop ((left 0)
+             (right (- (vector-length numbers) 1)))
+    (if (< left right)
+        (let ((sum (+ (vector-ref numbers left)
+                      (vector-ref numbers right))))
+          (cond
+           ((> sum target) (loop left (- right 1)))
+           ((< sum target) (loop (+ left 1) right))
+           (else (list (+ left 1) (+ right 1)))))
+        (list -1 -1))))
+#+END_SRC
