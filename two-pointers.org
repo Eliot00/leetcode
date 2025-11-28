@@ -405,3 +405,60 @@ bag_of_tokens_score([200,100], 150) # 答案应该是1
            (else (list (+ left 1) (+ right 1)))))
         (list -1 -1))))
 #+END_SRC
+
+* [[https://leetcode.cn/problems/sum-of-square-numbers/][633. 平方数之和]]
+
+a和b只可能比c小，而且最多到根号c（向下取整）
+
+题目说明了是整数里找，算平方，负数可以排除，相当于上一题的变种，在有序的自然数里找
+
+#+BEGIN_SRC scheme :session
+(sqrt 25)
+#+END_SRC
+
+#+RESULTS:
+: 5
+
+#+BEGIN_SRC scheme :session
+(sqrt 26)
+#+END_SRC
+
+#+RESULTS:
+: 5.0990195135927845
+
+开方再向下取整：
+
+#+BEGIN_SRC scheme :session
+(inexact->exact (floor (sqrt 26)))
+#+END_SRC
+
+#+RESULTS:
+: 5
+
+#+BEGIN_SRC scheme :session
+(define (judge-square-sum c)
+  (let loop ((left 0)
+             (right (inexact->exact (floor (sqrt c)))))
+    (if (< left right)
+        (let ((sum (+ (* left left)
+                      (* right right))))
+          (cond
+           ((> sum c) (loop left (- right 1)))
+           ((< sum c) (loop (+ left 1) right))
+           (else #t)))
+        #f)))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session
+(judge-square-sum 5)
+#+END_SRC
+
+#+RESULTS:
+: #t
+
++提交后报错，题目没说两个整数可以是一样的！循环条件小于改成小于等于后可以通过。+
+
+正负数平方后是相同的，但是以2为例，可以是1的平方加-1的平方，所以循环条件确实应该是小于等于。
