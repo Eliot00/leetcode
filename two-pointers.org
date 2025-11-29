@@ -502,3 +502,183 @@ a和b只可能比c小，而且最多到根号c（向下取整）
 
 #+RESULTS:
 : 10
+
+* [[https://leetcode.cn/problems/3sum/description/][15. 三数之和]]
+
+需要x,y,z和等於0，固定x，找y + x = -x，變成雙指針問題
+
+先試試在有序的數組中，找y和z：
+
+#+BEGIN_SRC scheme :session
+(define (find-y-z nums x)
+  (let loop ((left 0)
+             (right (- (vector-length nums) 1))
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list y z) ans)))))
+        ans)))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(find-y-z #(-4 -1 -1 0 1 2) -1)
+#+END_SRC
+
+#+RESULTS:
+|  0 | 1 |
+| -1 | 2 |
+
+將返回值改造下，返回xyz：
+
+#+BEGIN_SRC scheme :session
+(define (find-x-y-z nums x)
+  (let loop ((left 0)
+             (right (- (vector-length nums) 1))
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list x y z) ans)))))
+        ans)))
+#+END_SRC
+
+但是還要處理去重，如果遍歷nums，應該要跳過重複的x，雙指針的左端點也不應該每次都從0開始了
+
+#+BEGIN_SRC scheme :session
+(define (find-x-y-z nums x start)
+  (let loop ((left start)
+             (right (- (vector-length nums) 1))
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list x y z) ans)))))
+        ans)))
+
+(define (three-sum nums)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <)))
+    (let loop ((i 0)
+               (result '()))
+      (if (< i len)
+          (if (and (> i 0)
+                   (eq? (vector-ref sorted i)
+                        (vector-ref sorted (- i 1))))
+              (loop (+ i 1) result)
+              (let ((new-ans (find-x-y-z sorted
+                                         (vector-ref sorted i)
+                                         (+ i 1))))
+                (loop (+ i 1)
+                      (append result new-ans))))
+          result))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session
+(three-sum #(2 -3 0 -2 -5 -5 -4 1 2 -2 2 0 2 -4 5 5 -10))
+#+END_SRC
+
+#+RESULTS:
+| -10 |  5 | 5 |
+|  -5 |  0 | 5 |
+|  -5 |  0 | 5 |
+|  -4 |  2 | 2 |
+|  -4 |  2 | 2 |
+|  -3 |  1 | 2 |
+|  -3 | -2 | 5 |
+|  -3 | -2 | 5 |
+|  -2 |  0 | 2 |
+|  -2 |  0 | 2 |
+
+還是有重複，只跳過了重複的x，沒有考慮y和z也會重複。
+
+#+BEGIN_SRC scheme :session
+(define (find-x-y-z nums x start end)
+  (let loop ((left start)
+             (right end)
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((and (> left start)
+                 (eq? (vector-ref nums (- left 1)) y))
+            (loop (+ left 1) right ans))
+           ((and (< right end)
+                 (eq? (vector-ref nums (+ right 1)) z))
+            (loop left (- right 1) ans))
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list x y z) ans)))))
+        ans)))
+
+(define (three-sum nums)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <)))
+    (let loop ((i 0)
+               (result '()))
+      (if (< i len)
+          (if (and (> i 0)
+                   (eq? (vector-ref sorted i)
+                        (vector-ref sorted (- i 1))))
+              (loop (+ i 1) result)
+              (let ((new-ans (find-x-y-z sorted
+                                         (vector-ref sorted i)
+                                         (+ i 1)
+                                         (- len 1))))
+                (loop (+ i 1)
+                      (append result new-ans))))
+          result))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session
+(three-sum #(2 -3 0 -2 -5 -5 -4 1 2 -2 2 0 2 -4 5 5 -10))
+#+END_SRC
+
+#+RESULTS:
+| -10 |  5 | 5 |
+|  -5 |  0 | 5 |
+|  -4 |  2 | 2 |
+|  -3 |  1 | 2 |
+|  -3 | -2 | 5 |
+|  -2 |  0 | 2 |
+
+沒有重複了，提交通過，完成。
+
+還能做一些優化，按升序排序後，如果xyz和大於0了，後面的數再相加只會更大，可以直接跳出循環過程，但算法時間複雜度​=O(N^2)=​不能再優化了。
