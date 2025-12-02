@@ -682,3 +682,70 @@ a和b只可能比c小，而且最多到根号c（向下取整）
 沒有重複了，提交通過，完成。
 
 還能做一些優化，按升序排序後，如果xyz和大於0了，後面的數再相加只會更大，可以直接跳出循環過程，但算法時間複雜度​=O(N^2)=​不能再優化了。
+
+* [[https://leetcode.cn/problems/3sum-closest/description/][16. 最接近的三数之和]]
+
+#+BEGIN_SRC scheme :session
+(define (three-sum-closest nums target)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <))
+        (answer +inf.0)
+        (min-gap +inf.0))
+    (let outer-loop ((i 0))
+      (when (< i len)
+        ;; 跳过重复的i
+        (if (and (> i 0)
+                 (eq? (vector-ref sorted i)
+                      (vector-ref sorted (- i 1))))
+            (outer-loop (+ i 1))
+            (let ((x (vector-ref sorted i)))
+              (let inner-loop ((j (+ i 1))
+                               (k (- len 1)))
+                (when (< j k)
+                  (let* ((y (vector-ref sorted j))
+                         (z (vector-ref sorted k))
+                         (sum (+ x y z))
+                         (gap (abs (- sum target))))
+                    (when (< gap min-gap)
+                      (set! min-gap gap)
+                      (set! answer sum))
+                    (cond
+                     ((< sum target)
+                      (let loop ((new-j (+ j 1)))
+                        (if (and (< new-j k)
+                                 (eq? (vector-ref sorted new-j)
+                                      (vector-ref sorted j)))
+                            (loop (+ new-j 1))
+                            (inner-loop new-j k))))
+                     ((> sum target)
+                      (let loop ((new-k (- k 1)))
+                        (if (and (> new-k j)
+                                 (eq? (vector-ref sorted new-k)
+                                      (vector-ref sorted k)))
+                            (loop (- new-k 1))
+                            (inner-loop j new-k))))
+                     (else
+                      (set! answer sum)
+                      (set! min-gap 0))))))
+              (outer-loop (+ i 1))))))
+    answer))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(three-sum-closest #(-1 2 1 -4) 1)
+#+END_SRC
+
+#+RESULTS:
+: 2
+
+#+BEGIN_SRC scheme :session
+(three-sum-closest #(0 0 0) 1)
+#+END_SRC
+
+#+RESULTS:
+: 0
