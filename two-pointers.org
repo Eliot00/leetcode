@@ -749,3 +749,88 @@ a和b只可能比c小，而且最多到根号c（向下取整）
 
 #+RESULTS:
 : 0
+
+* [[https://leetcode.cn/problems/4sum/description/][18. 四数之和]]
+
+#+BEGIN_SRC scheme :session
+(define (four-sum nums target)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <)))
+    (define (outer-loop i ans)
+      (if (>= i (- len 3))
+          ans
+          (let ((a (vector-ref sorted i)))
+            (cond
+             ;; 跳过重复
+             ((and (> i 0)
+                   (eq? a (vector-ref sorted (- i 1))))
+              (outer-loop (+ i 1) ans))
+             
+             ;; 排序后四数超过了target，没有再往后找的必要了
+             ((and (< (+ i 3) len)
+                   (> (+ a
+                         (vector-ref sorted (+ i 1))
+                         (vector-ref sorted (+ i 2))
+                         (vector-ref sorted (+ i 3)))
+                      target))
+              ans)
+             
+             (else
+              (inner-loop (+ i 1) i a ans))))))
+    
+    (define (inner-loop j i a ans)
+      (if (>= j (- len 2))
+          (outer-loop (+ i 1) ans)
+          (let ((b (vector-ref sorted j)))
+            (cond
+             ;; 跳过重复
+             ((and (> j (+ i 1))
+                   (eq? b (vector-ref sorted (- j 1))))
+              (inner-loop (+ j 1) i a ans))
+             
+             (else
+              (two-pointer-loop (+ j 1) (- len 1) i j a b ans))))))
+    
+    (define (two-pointer-loop left right i j a b ans)
+      (if (>= left right)
+          (inner-loop (+ j 1) i a ans)
+          (let* ((c (vector-ref sorted left))
+                 (d (vector-ref sorted right))
+                 (sum (+ a b c d)))
+            (cond
+             ;; 跳过重复
+             ((and (> left (+ j 1))
+                   (eq? c (vector-ref sorted (- left 1))))
+              (two-pointer-loop (+ left 1) right i j a b ans))
+             
+             ;; 跳过重复
+             ((and (< right (- len 1))
+                   (eq? d (vector-ref sorted (+ right 1))))
+              (two-pointer-loop left (- right 1) i j a b ans))
+             
+             ((> sum target)
+              (two-pointer-loop left (- right 1) i j a b ans))
+             
+             ((< sum target)
+              (two-pointer-loop (+ left 1) right i j a b ans))
+             
+             (else
+              (let ((new-ans (cons (list a b c d) ans)))
+                (two-pointer-loop (+ left 1) (- right 1) i j a b new-ans)))))))
+    
+    (outer-loop 0 '())))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(four-sum #(1 0 -1 0 -2 2) 0)
+#+END_SRC
+
+#+RESULTS:
+| -1 |  0 | 0 | 1 |
+| -2 |  0 | 0 | 2 |
+| -2 | -1 | 1 | 2 |
