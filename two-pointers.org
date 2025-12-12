@@ -991,3 +991,62 @@ a和b只可能比c小，而且最多到根号c（向下取整）
 
 #+RESULTS:
 : 1
+
+* [[https://leetcode.cn/problems/valid-triangle-number/description/][611. 有效三角形的个数]]
+
+两边和大于第三边
+排序，固定最小边sorted[i]，最大边从sorted[i + 2]到sorted[n]，找中间边
+
+#+BEGIN_SRC scheme :session
+(define (triangle-number nums)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <)))
+    (let i-loop ((i 0)
+                 (ans 0))
+      (if (< i (- len 2))
+          (if (= (vector-ref sorted i) 0)
+              (i-loop (+ i 1) ans)
+              (let k-loop ((k (+ i 2))
+                           (ans ans))
+                (if (< k len)
+                    (let j-loop ((j (+ i 1)))
+                      (if (< j k)
+                          (let ((short (+ (vector-ref sorted i)
+                                          (vector-ref sorted j)))
+                                (long (vector-ref sorted k)))
+                            (if (> short long)
+                                (k-loop (+ k 1)
+                                        (+ ans (- k j)))
+                                (j-loop (+ j 1))))
+                          (k-loop (+ k 1)
+                                  ans)))
+                    (i-loop (+ i 1)
+                            ans))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(triangle-number #(2 2 3 4))
+#+END_SRC
+
+#+RESULTS:
+: 3
+
+#+BEGIN_SRC scheme :session
+(triangle-number #(4 2 3 4))
+#+END_SRC
+
+#+RESULTS:
+: 4
+
+#+BEGIN_SRC scheme :session
+(triangle-number #(0))
+#+END_SRC
+
+#+RESULTS:
+: 0
