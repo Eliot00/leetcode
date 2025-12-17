@@ -5,3 +5,4 @@
 - [[./sliding-window.org][滑動窗口]]
 - [[./two-pointers.org][雙指針]]
 - [[./binary-search.org][二分算法]]
+- [[./monotonous-stack.org][單調棧]]

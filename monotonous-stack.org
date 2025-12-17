@@ -1,0 +1,40 @@
+#+TITLE: 單調棧
+
+* [[https://leetcode.cn/problems/daily-temperatures/description/][739. 每日温度]]
+
+從右往左，入棧，棧不爲空且棧頂比當前大，更新答案爲棧頂索引減當前索引，否則出棧；棧空，說明後面沒有比當前大的數，答案記入0。
+
+#+BEGIN_SRC scheme :session
+(define (daily-temperatures temperatures)
+  (let ((len (vector-length temperatures)))
+    (let loop ((i (- len 1))
+               (stack '())
+               (ans '()))
+      (if (> i -1)
+          (let ((cur (vector-ref temperatures i)))
+            (if (null? stack)
+                (loop (- i 1)
+                      (cons i stack)
+                      (cons 0 ans))
+                (if (>= cur (vector-ref temperatures (car stack)))
+                    (loop i
+                          (cdr stack)
+                          ans)
+                    (loop (- i 1)
+                          (cons i stack)
+                          (cons (- (car stack) i)
+                                ans)))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(daily-temperatures #(73 74 75 71 69 72 76 73))
+#+END_SRC
+
+#+RESULTS:
+| 1 | 1 | 4 | 2 | 1 | 1 | 0 | 0 |
