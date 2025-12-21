@@ -38,3 +38,77 @@
 
 #+RESULTS:
 | 1 | 1 | 4 | 2 | 1 | 1 | 0 | 0 |
+
+* [[https://leetcode.cn/problems/final-prices-with-a-special-discount-in-a-shop/description/][1475. 商品折扣后的最终价格]]
+
+#+BEGIN_SRC scheme :session
+(define (final-prices prices)
+  (let ((len (vector-length prices))
+        (i 0)
+        (stack '())
+        (ans (vector-copy prices)))
+    (while (< i len)
+      (let ((cur (vector-ref prices i)))
+        (while (and (not (null? stack))
+                    (>= (vector-ref prices (car stack)) cur))
+          (vector-set! ans
+                       (car stack)
+                       (- (vector-ref ans (car stack))
+                          cur))
+          (set! stack (cdr stack))))
+      (set! stack (cons i stack))
+      (set! i (+ 1 i)))
+    ans))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(final-prices #(8 4 6 2 3))
+#+END_SRC
+
+#+RESULTS:
+: #(4 2 4 2 3)
+
+從右往左（提交LeetCode，返回list）：
+
+#+BEGIN_SRC scheme :session
+(define (final-prices prices)
+  (let ((len (vector-length prices)))
+    (let loop ((i (- len 1))
+               (stack '(0))
+               (ans '()))
+      (if (> i -1)
+          (let ((cur (vector-ref prices i)))
+            (if (and (not (null? stack))
+                     (> (car stack) cur))
+                (loop i
+                      (cdr stack)
+                      ans)
+                (loop (- i 1)
+                      (cons cur stack)
+                      (cons (- cur (car stack)) ans))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session
+(final-prices #(8 4 6 2 3))
+#+END_SRC
+
+#+RESULTS:
+| 4 | 2 | 4 | 2 | 3 |
+
+#+BEGIN_SRC scheme :session
+(final-prices #(10 1 1 6))
+#+END_SRC
+
+#+RESULTS:
+| 9 | 0 | 1 | 6 |
