@@ -39,6 +39,40 @@
 #+RESULTS:
 | 1 | 1 | 4 | 2 | 1 | 1 | 0 | 0 |
 
+** Python寫法
+
+*** 從右往左
+
+#+BEGIN_SRC python
+def daily_temperatures(temperatures):
+    n = len(temperatures)
+    stack = []
+    ans = [0] * n
+    for i in range(n - 1, -1, -1):
+        t = temperatures[i]
+        while stack and t >= temperatures[stack[-1]]:
+            stack.pop()
+        if stack:
+            ans[i] = stack[-1] - i
+        stack.append(i)
+    return ans
+#+END_SRC
+
+*** 從左往右
+
+#+BEGIN_SRC python
+def daily_temperatures(temperatures):
+    n = len(temperatures)
+    stack = []
+    ans = [0] * n
+    for i, t in enumerate(temperatures):
+        while stack and t > temperatures[stack[-1]]:
+            smaller_i = stack.pop()
+            ans[smaller_i] = i - smaller_i
+        stack.append(i)
+    return ans
+#+END_SRC
+
 * [[https://leetcode.cn/problems/final-prices-with-a-special-discount-in-a-shop/description/][1475. 商品折扣后的最终价格]]
 
 #+BEGIN_SRC scheme :session
