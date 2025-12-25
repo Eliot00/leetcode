@@ -175,3 +175,55 @@ next_greater_element([4, 1, 2], [1, 3, 4, 2])
 
 #+RESULTS:
 | -1 | 3 | -1 |
+
+* [[https://leetcode.cn/problems/next-greater-element-ii/description/][503. 下一个更大元素 II]]
+
+從右往左，n乘2，索引取模模擬循環數組：
+
+#+BEGIN_SRC python :session
+def next_greater_elements(nums):
+    n = len(nums)
+    stack = []
+    ans = [-1] * n
+    for i in range(n * 2 - 1, -1, -1):
+        x = nums[i % n]
+        while stack and x >= stack[-1]:
+            stack.pop()
+        if stack and i < n:
+            ans[i] = stack[-1]
+        stack.append(x)
+    return ans
+#+END_SRC
+
+#+RESULTS:
+: None
+
+#+BEGIN_SRC python :session
+next_greater_elements([1, 2, 1])
+#+END_SRC
+
+#+RESULTS:
+| 2 | -1 | 2 |
+
+#+BEGIN_SRC python :session
+next_greater_elements([1, 2, 3, 4, 3])
+#+END_SRC
+
+#+RESULTS:
+| 2 | 3 | 4 | -1 | 4 |
+
+從左往右：
+
+#+BEGIN_SRC python
+def next_greater_elements(nums):
+    n = len(nums)
+    stack = []
+    ans = [-1] * n
+    for i in range(n * 2):
+        x = nums[i % n]
+        while stack and x > nums[stack[-1]]:
+            ans[stack.pop()] = x
+        if i < n:
+            stack.append(i)
+    return ans
+#+END_SRC
