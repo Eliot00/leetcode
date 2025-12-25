@@ -227,3 +227,19 @@ def next_greater_elements(nums):
             stack.append(i)
     return ans
 #+END_SRC
+
+* [[https://leetcode.cn/problems/online-stock-span/description/][901. 股票价格跨度]]
+
+#+BEGIN_SRC python
+class StockSpanner:
+    def __init__(self):
+        self.stack = [(-1, inf)]
+        self.today = -1
+
+    def next(self, price: int) -> int:
+        while price >= self.stack[-1][1]:
+            self.stack.pop()
+        self.today += 1
+        self.stack.append((self.today, price))
+        return self.today - self.stack[-2][0]
+#+END_SRC
