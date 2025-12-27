@@ -267,3 +267,41 @@ def car_fleet(target, position, speed):
         stack.append(time)
     return len(stack)
 #+END_SRC
+
+* [[https://leetcode.cn/problems/next-greater-node-in-linked-list/description/][1019. 链表中的下一个更大节点]]
+
+輸入是列表，輸出是數組，需要維護索引。
+
+#+BEGIN_SRC python
+def next_larger_nodes(head):
+    stack = []
+    i = 0
+    ans = []
+    while head:
+        x = head.val
+        while stack and x > stack[-1][0]:
+            ans[stack.pop()[1]] = x
+        stack.append([x, i])
+        i += 1
+        ans.append(0)
+        head = head.next
+    return ans
+#+END_SRC
+
+直接將當前值推入ans，stack存當前索引：
+
+#+BEGIN_SRC python
+def next_larger_nodes(head):
+    stack = []
+    ans = []
+    while head:
+        x = head.val
+        while stack and x > ans[stack[-1]]:
+            ans[stack.pop()] = x
+        stack.append(len(ans))
+        ans.append(x)
+        head = head.next
+    for i in stack:
+        ans[i] = 0
+    return ans
+#+END_SRC
