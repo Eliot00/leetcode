@@ -243,3 +243,27 @@ class StockSpanner:
         self.stack.append((self.today, price))
         return self.today - self.stack[-2][0]
 #+END_SRC
+
+* [[https://leetcode.cn/problems/car-fleet/description/][853. 车队]]
+
+落後的車必需以更快的速度纔有可能追上前車
+
+按當前位置排序，算不考慮其它車的情況下到終點的時間，(終點 - 當前位置) / 速度
+
+位置靠後的車，如果需要的時間比前車多，是不是就會被追上？
+
+問題就變成，找當前元素的上一個時間比當前大的元素，中間所有車都屬於一個車隊
+
+#+BEGIN_SRC python
+def car_fleet(target, position, speed):
+    # zip後按position排序
+    cars = sorted(zip(position, speed))
+    # 這裏用單調棧，棧深度表示的就是車隊數
+    stack = []
+    for p, s in cars:
+        time = (target - p) / s
+        while stack and stack[-1] <= time:
+            stack.pop()
+        stack.append(time)
+    return len(stack)
+#+END_SRC
