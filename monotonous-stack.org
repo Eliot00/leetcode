@@ -305,3 +305,52 @@ def next_larger_nodes(head):
         ans[i] = 0
     return ans
 #+END_SRC
+
+* [[https://leetcode.cn/problems/max-chunks-to-make-sorted-ii/][768. 最多能完成排序的块 II]]
+
+每遇到一个更大的数就应该单独分一块。
+
+但是遇到更小的数，也不能忽略，如[4, 5, 3]，到5的时候可以分成两块，但是到3时，3比上一个块里最大的数还小，得重新分配块。
+
+用一个栈结构存每个块的最大值，遇到大数就入栈，小数就和之前的块最大值比较，比以前的块最大值小就要减少一个块划分。最后栈深度就是最大块数。
+
+题目要求array，但racket给的是list
+
+#+BEGIN_SRC scheme :session
+(use-modules (ice-9 match))
+
+(define (max-chunks-to-sorted arr)
+  (let loop ((lst arr)
+             (blocks '()))
+    (match lst
+      (() (length blocks))
+      ((x xs ...) (if (or (null? blocks)
+                          (>= x (car blocks)))
+                       (loop xs
+                             (cons x blocks))
+                       (let ((top (car blocks))
+                             (re-splitted (let re-split ((b (cdr blocks)))
+                                            (if (and (not (null? b))
+                                                     (> (car b) x))
+                                                (re-split (cdr b))
+                                                b))))
+                         (loop xs
+                               (cons top re-splitted))))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session
+(max-chunks-to-sorted '(5 4 3 2 1))
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+#+BEGIN_SRC scheme :session
+(max-chunks-to-sorted '(2 1 3 4 4))
+#+END_SRC
+
+#+RESULTS:
+: 4
