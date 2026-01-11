@@ -354,3 +354,49 @@ def next_larger_nodes(head):
 
 #+RESULTS:
 : 4
+
+* [[https://leetcode.cn/problems/132-pattern/description/][456. 132 模式]]
+
+#+BEGIN_SRC scheme :session
+(use-modules (srfi srfi-11))
+
+(define (find132pattern nums)
+  (let ((len (vector-length nums)))
+    (let loop ((i (- len 1))
+               (stack '())
+               (k -inf.0))
+      (if (< i 0)
+          #f
+          (let ((cur (vector-ref nums i)))
+            (if (< cur k)
+                #t
+                (let-values (((new-stack new-k)
+                              (let pop-loop ((st stack) (cur-k k))
+                                (if (and (not (null? st))
+                                         (< (car st) cur))
+                                    (pop-loop (cdr st)
+                                              (max cur-k (car st)))
+                                    (values st cur-k)))))
+                  (loop (- i 1)
+                        (cons cur new-stack)
+                        new-k))))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(find132pattern #(1 2 3 4))
+#+END_SRC
+
+#+RESULTS:
+: #f
+
+#+BEGIN_SRC scheme :session
+(find132pattern #(3 1 4 2))
+#+END_SRC
+
+#+RESULTS:
+: #t
