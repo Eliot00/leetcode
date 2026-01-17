@@ -400,3 +400,143 @@ def next_larger_nodes(head):
 
 #+RESULTS:
 : #t
+
+* [[https://leetcode.cn/problems/find-the-number-of-subarrays-where-boundary-elements-are-maximum/][3113. 边界元素是最大值的子数组数目]]
+
+两端相等中间小，且答案至少是数组长度
+
+遍历，遇到大的出栈？
+
+#+BEGIN_SRC scheme :session
+(define (number-of-subarrays nums)
+  (let ((n (vector-length nums)))
+    (let loop ((i 0)
+               (stack '())
+               (ans n))
+      (if (< i n)
+          (let ((cur (vector-ref nums i)))
+            (if (null? stack)
+                (loop (+ i 1)
+                      (cons cur stack)
+                      ans)
+                (let ((top (car stack)))
+                  (cond
+                   ((= cur top) (loop (+ i 1)
+                                      stack
+                                      (+ ans 1)))
+                   ((> cur top) (loop i
+                                      (cdr stack)
+                                      ans))
+                   (else (loop (+ i 1)
+                               stack
+                               ans))))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session
+(number-of-subarrays #(1 4 3 3 2)) ;; 答案应为6
+#+END_SRC
+
+#+RESULTS:
+: 5
+
+结果不对
+
+遇到大于栈顶出栈没错，但是遇到小的应该也进栈
+
+#+BEGIN_SRC scheme :session
+(define (number-of-subarrays nums)
+  (let ((n (vector-length nums)))
+    (let loop ((i 0)
+               (stack '())
+               (ans n))
+      (if (< i n)
+          (let ((cur (vector-ref nums i)))
+            (if (null? stack)
+                (loop (+ i 1)
+                      (cons cur stack)
+                      ans)
+                (let ((top (car stack)))
+                  (cond
+                   ((= cur top) (loop (+ i 1)
+                                      stack
+                                      (+ ans 1)))
+                   ((> cur top) (loop i
+                                      (cdr stack)
+                                      ans))
+                   (else (loop (+ i 1)
+                               (cons cur stack)
+                               ans))))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(number-of-subarrays #(1 4 3 3 2)) ;; 答案应为6
+#+END_SRC
+
+#+RESULTS:
+: 6
+
+#+BEGIN_SRC scheme :session
+(number-of-subarrays #(3 3 3)) ;; 答案应为6
+#+END_SRC
+
+#+RESULTS:
+: 5
+
+输入为 =#(3 3 3)= 时不对，前两个3，后两个3，首尾两个3有3种组合
+
+n个相等的数，中间都符合条件，那就有n种组合，栈里还需要保留计数
+
+#+BEGIN_SRC scheme :session
+(define (number-of-subarrays nums)
+  (let ((n (vector-length nums)))
+    (let loop ((i 0)
+               (stack '())
+               (ans n))
+      (if (< i n)
+          (let ((cur (vector-ref nums i)))
+            (if (null? stack)
+                (loop (+ i 1)
+                      (cons (cons cur 1) stack)
+                      ans)
+                (let ((top (caar stack))
+                      (top-cnt (cdar stack)))
+                  (cond
+                   ((= cur top) (loop (+ i 1)
+                                      (cons (cons top (+ top-cnt 1))
+                                            (cdr stack))
+                                      (+ ans top-cnt)))
+                   ((> cur top) (loop i
+                                      (cdr stack)
+                                      ans))
+                   (else (loop (+ i 1)
+                               (cons (cons cur 1) stack)
+                               ans))))))
+          ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session
+(number-of-subarrays #(1 4 3 3 2)) ;; 答案应为6
+#+END_SRC
+
+#+RESULTS:
+: 6
+
+#+BEGIN_SRC scheme :session
+(number-of-subarrays #(3 3 3)) ;; 答案应为6
+#+END_SRC
+
+#+RESULTS:
+: 6
