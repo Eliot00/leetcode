@@ -540,3 +540,143 @@ n个相等的数，中间都符合条件，那就有n种组合，栈里还需要
 
 #+RESULTS:
 : 6
+
+* [[https://leetcode.cn/problems/beautiful-towers-i/description/][2865. 美丽塔 I]]
+
+** 暴力做法
+
+#+BEGIN_SRC scheme :session
+(define (maximum-sum-of-heights heights)
+  (let ((n (vector-length heights)))
+    (define (calculate-sum i)
+      (let* ((current-height (vector-ref heights i))
+             ;; 计算左侧部分的和
+             (left-sum (let loop ((j (- i 1))
+                                  (pre current-height)
+                                  (sum 0))
+                         (if (< j 0)
+                             sum
+                             (let ((new-pre (min pre (vector-ref heights j))))
+                               (loop (- j 1)
+                                     new-pre
+                                     (+ sum new-pre))))))
+             ;; 计算右侧部分的和
+             (right-sum (let loop ((j (+ i 1))
+                                   (suf current-height)
+                                   (sum 0))
+                          (if (>= j n)
+                              sum
+                              (let ((new-suf (min suf (vector-ref heights j))))
+                                (loop (+ j 1)
+                                      new-suf
+                                      (+ sum new-suf)))))))
+        (+ current-height left-sum right-sum)))
+    
+    ;; 遍历所有位置，找出最大和
+    (let loop ((i 0)
+               (res 0))
+      (if (>= i n)
+          res
+          (loop (+ i 1)
+                (max res (calculate-sum i)))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(maximum-sum-of-heights #(5 3 4 1 1))
+#+END_SRC
+
+#+RESULTS:
+: 13
+
+#+BEGIN_SRC scheme :session
+(maximum-sum-of-heights #(6 5 3 9 2 7))
+#+END_SRC
+
+#+RESULTS:
+: 22
+
+** 单调栈做法
+
+空间换时间：
+
+#+BEGIN_SRC scheme :session
+(define (maximum-sum-of-heights max-heights)
+  (let* ((n (vector-length max-heights))
+         (prefix (make-vector n 0))
+         (suffix (make-vector n 0)))
+    
+    ;; 计算前缀和，使用单调栈
+    (let loop-prefix ((i 0)
+                      (stack '()))
+      (when (< i n)
+        (let* ((current-height (vector-ref max-heights i))
+               ;; 弹出栈中高度大于等于当前高度的元素
+               (new-stack (let pop-loop ((s stack))
+                           (if (or (null? s)
+                                   (>= current-height 
+                                      (vector-ref max-heights (car s))))
+                               s
+                               (pop-loop (cdr s)))))
+               ;; 计算前缀和
+               (prefix-val (if (null? new-stack)
+                               (* (+ i 1) current-height)
+                               (let ((last (car new-stack)))
+                                 (+ (vector-ref prefix last)
+                                    (* (- i last) current-height))))))
+          (vector-set! prefix i prefix-val)
+          (loop-prefix (+ i 1) (cons i new-stack)))))
+    
+    ;; 计算后缀和，使用单调栈，同时计算最大值
+    (let loop-suffix ((i (- n 1))
+                      (stack '())
+                      (res 0))
+      (if (< i 0)
+          res
+          (let* ((current-height (vector-ref max-heights i))
+                 ;; 弹出栈中高度大于等于当前高度的元素
+                 (new-stack (let pop-loop ((s stack))
+                             (if (or (null? s)
+                                     (>= current-height 
+                                        (vector-ref max-heights (car s))))
+                                 s
+                                 (pop-loop (cdr s)))))
+                 ;; 计算后缀和
+                 (suffix-val (if (null? new-stack)
+                                 (* (- n i) current-height)
+                                 (let ((last (car new-stack)))
+                                   (+ (vector-ref suffix last)
+                                      (* (- last i) current-height)))))
+                 ;; 更新最大值
+                 (total (+ (vector-ref prefix i)
+                          suffix-val
+                          (- current-height)))
+                 (new-res (max res total)))
+            (vector-set! suffix i suffix-val)
+            (loop-suffix (- i 1) (cons i new-stack) new-res))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+测试：
+
+#+BEGIN_SRC scheme :session
+(maximum-sum-of-heights #(5 3 4 1 1))
+#+END_SRC
+
+#+RESULTS:
+: 13
+
+#+BEGIN_SRC scheme :session
+(maximum-sum-of-heights #(6 5 3 9 2 7))
+#+END_SRC
+
+#+RESULTS:
+: 22
+
+暴力解47ms，单调栈3ms
