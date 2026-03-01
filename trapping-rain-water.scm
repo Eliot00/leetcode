@@ -73,3 +73,33 @@
 (test-eqv "case 2" 9 (trap-pre-suf '(4 2 0 3 2 5)))
 
 (test-end "trap-pre-suf")
+
+(define (trap-two-pointers height)
+  (let ((n (vector-length height)))
+    (let loop ((left 0)
+               (right (- n 1))
+               (pre-max 0)
+               (suf-max 0)
+               (ans 0))
+      (if (< left right)
+          (let ((new-pre-max (max pre-max (vector-ref height left)))
+                (new-suf-max (max suf-max (vector-ref height right))))
+            (if (< new-pre-max new-suf-max)
+                (loop (+ left 1)
+                      right
+                      new-pre-max
+                      new-suf-max
+                      (+ ans (- new-pre-max (vector-ref height left))))
+                (loop left
+                      (- right 1)
+                      new-pre-max
+                      new-suf-max
+                      (+ ans (- new-suf-max (vector-ref height right))))))
+          ans))))
+
+(test-begin "trap-two-pointers")
+
+(test-eqv "case 1" 6 (trap-two-pointers #(0 1 0 2 1 0 1 3 2 1 2 1)))
+(test-eqv "case 2" 9 (trap-two-pointers #(4 2 0 3 2 5)))
+
+(test-end "trap-two-pointers")
