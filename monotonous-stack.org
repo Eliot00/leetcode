@@ -1,5 +1,12 @@
 #+TITLE: 單調棧
 
+#+BEGIN_SRC scheme :session
+(use-modules (srfi srfi-64))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
 * [[https://leetcode.cn/problems/daily-temperatures/description/][739. 每日温度]]
 
 從右往左，入棧，棧不爲空且棧頂比當前大，更新答案爲棧頂索引減當前索引，否則出棧；棧空，說明後面沒有比當前大的數，答案記入0。
@@ -680,3 +687,71 @@ n个相等的数，中间都符合条件，那就有n种组合，栈里还需要
 : 22
 
 暴力解47ms，单调栈3ms
+
+* [[https://leetcode.cn/problems/largest-rectangle-in-histogram/][84. 柱状图中最大的矩形]]
+
+木桶效应，高度取决于矮的柱子。矩形高度一定等于数组中某个柱子。一定是相邻的。
+
+那么可以枚举每种柱子高度，判断最大可能的宽度，算最大面积？
+
+#+BEGIN_SRC scheme :session
+(define (largest-rectangle-area heights)
+  (let* ((n (vector-length heights))
+         (left (make-vector n -1))
+         (right (make-vector n n)))
+    (let left-loop ((i 0)
+                    (stack '()))
+      (when (< i n)
+        (let ((h (vector-ref heights i)))
+          (cond
+           ((null? stack)
+            (left-loop (+ i 1) (cons i stack)))
+           ((>= (vector-ref heights (car stack)) h)
+            (left-loop i (cdr stack)))
+           (else
+            (begin
+              (vector-set! left i (car stack))
+              (left-loop (+ i 1) (cons i stack))))))))
+    (let right-loop ((i (- n 1))
+                     (stack '()))
+      (when (> i -1)
+        (let ((h (vector-ref heights i)))
+          (cond
+           ((null? stack)
+            (right-loop (- i 1) (cons i stack)))
+           ((>= (vector-ref heights (car stack)) h)
+            (right-loop i (cdr stack)))
+           (else
+            (begin
+              (vector-set! right i (car stack))
+              (right-loop (- i 1) (cons i stack))))))))
+    (let loop ((i 0)
+               (ans 0))
+      (if (= i n)
+          ans
+          (loop (+ i 1)
+                (max ans (* (vector-ref heights i)
+                            (- (vector-ref right i)
+                               (vector-ref left i)
+                               1))))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+#+BEGIN_SRC scheme :session :results output
+(test-begin "largest-rectangle-in-histogram")
+
+(test-eqv "case 1" 10 (largest-rectangle-area #(2 1 5 6 2 3)))
+(test-eqv "case 2" 4 (largest-rectangle-area #(2 4)))
+
+(test-end "largest-rectangle-in-histogram")
+#+END_SRC
+
+#+RESULTS:
+: *** Entering test group: largest-rectangle-in-histogram ***
+: * PASS: case 1
+: * PASS: case 2
+: *** Leaving test group: largest-rectangle-in-histogram ***
+: *** Test suite finished. ***
+: *** # of expected passes    : 2
