@@ -680,3 +680,23 @@ n个相等的数，中间都符合条件，那就有n种组合，栈里还需要
 : 22
 
 暴力解47ms，单调栈3ms
+
+* [[https://leetcode.cn/problems/largest-rectangle-in-histogram/][84. 柱状图中最大的矩形]]
+
+木桶效应，高度取决于矮的柱子。矩形高度一定等于数组中某个柱子。一定是相邻的。
+
+那么可以枚举每种柱子高度，判断最大可能的宽度，算最大面积？
+
+#+BEGIN_SRC scheme :session
+(define (largest-rectangle-area heights)
+  (let* ((n (vector-length heights))
+         (left (make-vector n -1))
+         (right (make-vector n n)))
+    (let left-loop ((i 0)
+                    (stack '()))
+      (if (< i n)
+          (let ((h (vector-ref ))))))))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
