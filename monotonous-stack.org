@@ -739,6 +739,8 @@ n个相等的数，中间都符合条件，那就有n种组合，栈里还需要
 #+RESULTS:
 : #<unspecified>
 
+测试：
+
 #+BEGIN_SRC scheme :session :results output
 (test-begin "largest-rectangle-in-histogram")
 
@@ -755,3 +757,40 @@ n个相等的数，中间都符合条件，那就有n种组合，栈里还需要
 : *** Leaving test group: largest-rectangle-in-histogram ***
 : *** Test suite finished. ***
 : *** # of expected passes    : 2
+
+只用两次循环，能否一次遍历初始化两个数组？
+
+#+BEGIN_SRC scheme :session
+(define (largest-rectangle-area heights)
+  (let* ((n (vector-length heights))
+         (left (make-vector n -1))
+         (right (make-vector n n)))
+    (let left-right-loop ((i 0)
+                          (stack '()))
+      (when (< i n)
+        (let ((h (vector-ref heights i)))
+          (cond
+           ((null? stack)
+            (left-right-loop (+ i 1) (cons i stack)))
+           ((>= (vector-ref heights (car stack)) h)
+            (begin
+              (vector-set! right (car stack) i)
+              (left-right-loop i (cdr stack))))
+           (else
+            (begin
+              (vector-set! left i (car stack))
+              (left-right-loop (+ i 1) (cons i stack))))))))
+    (let loop ((i 0)
+               (ans 0))
+      (if (= i n)
+          ans
+          (loop (+ i 1)
+                (max ans (* (vector-ref heights i)
+                            (- (vector-ref right i)
+                               (vector-ref left i)
+                               1))))))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
