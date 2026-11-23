@@ -1,0 +1,67 @@
+#+TITLE: DFS
+
+#+BEGIN_SRC scheme :session
+(use-modules (srfi srfi-64))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+* 200. 岛屿数量
+
+#+BEGIN_SRC scheme :session
+(define (num-islands grid)
+  (let* ([grid (list->vector (map list->vector grid))]
+         [m    (vector-length grid)]
+         [n    (vector-length (vector-ref grid 0))])
+    (define (dfs i j)
+      (cond [(< i 0) 0]
+            [(>= i m) 0]
+            [(< j 0) 0]
+            [(>= j n) 0]
+            [(not (char=? #\1 (vector-ref (vector-ref grid i) j))) 0]
+            [else (vector-set! (vector-ref grid i) j #\2)
+                  (dfs i (- j 1))
+                  (dfs i (+ j 1))
+                  (dfs (- i 1) j)
+                  (dfs (+ i 1) j)]))
+    (do ((i 0 (+ i 1))
+         (ans 0
+              (do ((j 0 (+ j 1))
+                   (ans ans
+                        (if (char=? (vector-ref (vector-ref grid i) j) #\1)
+                            (begin
+                              (dfs i j)
+                              (+ ans 1))
+                            ans)))
+                  ((= j n) ans))))
+        ((= i m) ans))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session :results output
+(test-begin "num-islands")
+(test-equal "example-1" 1
+  (num-islands '((#\1 #\1 #\1 #\1 #\0)
+                 (#\1 #\1 #\0 #\1 #\0)
+                 (#\1 #\1 #\0 #\0 #\0)
+                 (#\0 #\0 #\0 #\0 #\0))))
+(test-equal "example-2" 3
+  (num-islands '((#\1 #\1 #\0 #\0 #\0)
+                 (#\1 #\1 #\0 #\0 #\0)
+                 (#\0 #\0 #\1 #\0 #\0)
+                 (#\0 #\0 #\0 #\1 #\1))))
+(test-end "num-islands")
+#+END_SRC
+
+#+RESULTS:
+: *** Entering test group: num-islands ***
+: * PASS: example-1
+: * PASS: example-2
+: *** Leaving test group: num-islands ***
+: *** Test suite finished. ***
+: *** # of expected passes    : 2
