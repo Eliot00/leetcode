@@ -1,7 +1,8 @@
 #+TITLE: DFS
 
 #+BEGIN_SRC scheme :session
-(use-modules (srfi srfi-64))
+(add-to-load-path ".")
+(use-modules (srfi srfi-64) (helper iteration))
 #+END_SRC
 
 #+RESULTS:
@@ -85,11 +86,10 @@
                      (dfs i (+ j 1))
                      (dfs (- i 1) j)
                      (dfs (+ i 1) j))]))
-    (do ((i 0 (+ i 1))
-         (area 0 (do ((j 0 (+ j 1))
-                      (area area (max area (dfs i j))))
-                  ((= j n) area))))
-        ((= i m) area))))
+    (for*/fold ([area 0])
+               ([i (in-range m)]
+                [j (in-range n)])
+      (max area (dfs i j)))))
 #+END_SRC
 
 #+RESULTS:
