@@ -65,3 +65,66 @@
 : *** Leaving test group: num-islands ***
 : *** Test suite finished. ***
 : *** # of expected passes    : 2
+
+* 695. 岛屿的最大面积
+
+#+BEGIN_SRC scheme :session
+(define (max-area-of-island grid)
+  (let* ([grid (list->vector (map list->vector grid))]
+         [m    (vector-length grid)]
+         [n    (vector-length (vector-ref grid 0))])
+    (define (dfs i j)
+      (cond [(< i 0) 0]
+            [(>= i m) 0]
+            [(< j 0) 0]
+            [(>= j n) 0]
+            [(not (= 1 (vector-ref (vector-ref grid i) j))) 0]
+            [else (vector-set! (vector-ref grid i) j 0)
+                  (+ 1
+                     (dfs i (- j 1))
+                     (dfs i (+ j 1))
+                     (dfs (- i 1) j)
+                     (dfs (+ i 1) j))]))
+    (do ((i 0 (+ i 1))
+         (area 0 (do ((j 0 (+ j 1))
+                      (area area (max area (dfs i j))))
+                  ((= j n) area))))
+        ((= i m) area))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session :results output
+(test-begin "max-area-of-island")
+(test-equal "example-1" 6
+  (max-area-of-island '((0 0 1 0 0 0 0 1 0 0 0 0 0)
+                        (0 0 0 0 0 0 0 1 1 1 0 0 0)
+                        (0 1 1 0 1 0 0 0 0 0 0 0 0)
+                        (0 1 0 0 1 1 0 0 1 0 1 0 0)
+                        (0 1 0 0 1 1 0 0 1 1 1 0 0)
+                        (0 0 0 0 0 0 0 0 0 0 1 0 0)
+                        (0 0 0 0 0 0 0 1 1 1 0 0 0)
+                        (0 0 0 0 0 0 0 1 1 0 0 0 0))))
+(test-equal "example-2" 0
+  (max-area-of-island '((0 0 0 0 0 0 0 0))))
+(test-equal "single-cell" 1
+  (max-area-of-island '((1))))
+(test-equal "all-water" 0
+  (max-area-of-island '((0 0 0)
+                        (0 0 0)
+                        (0 0 0))))
+(test-end "max-area-of-island")
+#+END_SRC
+
+#+RESULTS:
+: *** Entering test group: max-area-of-island ***
+: * PASS: example-1
+: * PASS: example-2
+: * PASS: single-cell
+: * PASS: all-water
+: *** Leaving test group: max-area-of-island ***
+: *** Test suite finished. ***
+: *** # of expected passes    : 4
