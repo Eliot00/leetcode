@@ -7,6 +7,7 @@
             in-vector
             in-string
             in-naturals
+            in-indexed
             for/fold
             for*/fold
             for
@@ -14,6 +15,8 @@
             for/sum
             for/max
             for/min
+            for/count
+            for*/count
             for/and
             for/or))
 
@@ -51,6 +54,13 @@
     [() (in-naturals 0)]
     [(start) (let loop ([i start])
                (stream-cons i (loop (+ i 1))))]))
+
+(define (in-indexed strm)
+  (let loop ([i 0] [s strm])
+    (if (stream-null? s)
+        stream-null
+        (stream-cons (cons i (stream-car s))
+                     (loop (+ i 1) (stream-cdr s))))))
 
 (define (fold-streams accs streams proc)
   (let loop ([accs accs] [streams streams])
@@ -119,6 +129,20 @@
        #'(for/fold ([best #f]) ([x seq] ...)
            (let ([v (let () body ...)])
              (if best (min best v) v)))])))
+
+(define-syntax for/count
+  (lambda (stx)
+    (syntax-case stx ()
+      [(_ ([x seq] ...) body ...)
+       #'(for/fold ([n 0]) ([x seq] ...)
+           (if (let () body ...) (+ n 1) n))])))
+
+(define-syntax for*/count
+  (lambda (stx)
+    (syntax-case stx ()
+      [(_ ([x seq] ...) body ...)
+       #'(for*/fold ([n 0]) ([x seq] ...)
+           (if (let () body ...) (+ n 1) n))])))
 
 (define-syntax for/and
   (lambda (stx)
