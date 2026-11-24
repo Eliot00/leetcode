@@ -128,3 +128,89 @@
 : *** Leaving test group: max-area-of-island ***
 : *** Test suite finished. ***
 : *** # of expected passes    : 4
+
+* 3619. 总价值可以被 K 整除的岛屿数目
+
+#+BEGIN_SRC scheme :session
+(define (count-islands grid k)
+  (let* ([grid (list->vector (map list->vector grid))]
+         [m    (vector-length grid)]
+         [n    (vector-length (vector-ref grid 0))])
+    (define (dfs i j)
+      (cond [(< i 0) 0]
+            [(>= i m) 0]
+            [(< j 0) 0]
+            [(>= j n) 0]
+            [(= 0 (vector-ref (vector-ref grid i) j)) 0]
+            [else
+             (let ([value (vector-ref (vector-ref grid i) j)])
+               (vector-set! (vector-ref grid i) j 0)
+               (+ value
+                  (dfs i (- j 1))
+                  (dfs i (+ j 1))
+                  (dfs (- i 1) j)
+                  (dfs (+ i 1) j)))]))
+    (for*/fold ([count 0])
+               ([i (in-range m)]
+                [j (in-range n)])
+      (if (and (not (= 0 (vector-ref (vector-ref grid i) j)))
+               (= 0 (modulo (dfs i j) k)))
+          (+ count 1)
+          count))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
+
+測試：
+
+#+BEGIN_SRC scheme :session :results output
+(test-begin "count-islands")
+(test-equal "example-1" 2
+  (count-islands '((0 2 1 0 0)
+                   (0 5 0 0 5)
+                   (0 0 1 0 0)
+                   (0 1 4 7 0)
+                   (0 2 0 0 8)) 5))
+(test-equal "example-2" 6
+  (count-islands '((3 0 3 0)
+                   (0 3 0 3)
+                   (3 0 3 0)) 3))
+(test-equal "single-divisible" 1
+  (count-islands '((5)) 5))
+(test-equal "single-not-divisible" 0
+  (count-islands '((3)) 5))
+(test-equal "all-water" 0
+  (count-islands '((0 0 0)
+                   (0 0 0)) 2))
+(test-equal "k-equals-one" 3
+  (count-islands '((1 0 2)
+                   (0 0 0)
+                   (4 0 0)) 1))
+(test-equal "island-not-divisible" 0
+  (count-islands '((1 1)) 3))
+(test-equal "vertical-island" 1
+  (count-islands '((1) (2) (2)) 5))
+(test-equal "diagonal-separate" 0
+  (count-islands '((1 0 1)
+                   (0 1 0)
+                   (1 0 1)) 2))
+(test-end "count-islands")
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+,*** Entering test group: count-islands ***
+,* PASS: example-1
+,* PASS: example-2
+,* PASS: single-divisible
+,* PASS: single-not-divisible
+,* PASS: all-water
+,* PASS: k-equals-one
+,* PASS: island-not-divisible
+,* PASS: vertical-island
+,* PASS: diagonal-separate
+,*** Leaving test group: count-islands ***
+,*** Test suite finished. ***
+,*** # of expected passes    : 9
+#+end_example
