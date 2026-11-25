@@ -6,3 +6,22 @@
 - [[./two-pointers.org][雙指針]]
 - [[./binary-search.org][二分算法]]
 - [[./monotonous-stack.org][單調棧]]
+- [[./depth-first-search.org][DFS]]
+
+** 提交到 LeetCode
+
+加載 =helper/leetcode-org.el= 後，在解法塊裏用：
+
+| 按鍵     | 命令                   | 作用                                |
+|----------+------------------------+-------------------------------------|
+| =C-c l i= | =leetcode-org-id=      | 從當前標題解析題號（如 =* 3619. …=） |
+| =C-c l t= | =leetcode-org-test=    | 把塊內容送去跑樣例                  |
+| =C-c l s= | =leetcode-org-submit=  | 提交解法                            |
+| =C-c l p= | =leetcode-org-pick=    | 拉題目描述插到當前小節              |
+
+初始化：
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path (expand-file-name "helper" default-directory))
+(require 'leetcode-org)
+#+END_SRC
