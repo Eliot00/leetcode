@@ -214,3 +214,35 @@
 ,*** Test suite finished. ***
 ,*** # of expected passes    : 9
 #+end_example
+
+* 2658. 网格图中鱼的最大数目
+
+和695一样
+
+#+BEGIN_SRC scheme :session :tangle ~/.leetcode/code/2658.maximum-number-of-fish-in-a-grid.rkt
+(define (find-max-fish grid)
+  (let* ([grid (list->vector (map list->vector grid))]
+         [m (vector-length grid)]
+         [n (vector-length (vector-ref grid 0))])
+    (define (dfs i j)
+      (cond [(< i 0) 0]
+            [(>= i m) 0]
+            [(< j 0) 0]
+            [(>= j n) 0]
+            [(= 0 (vector-ref (vector-ref grid i) j)) 0]
+            [else
+             (let ([value (vector-ref (vector-ref grid i) j)])
+               (vector-set! (vector-ref grid i) j 0)
+               (+ value
+                  (dfs i (- j 1))
+                  (dfs i (+ j 1))
+                  (dfs (- i 1) j)
+                  (dfs (+ i 1) j)))]))
+    (for*/fold ([ans 0])
+               ([i (in-range m)]
+                [j (in-range n)])
+      (max ans (dfs i j)))))
+#+END_SRC
+
+#+RESULTS:
+: #<unspecified>
