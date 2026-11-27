@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
-# leetcode wrapper: feed code on stdin, run a LeetCode CLI command against it.
+# Write stdin to the CLI's solution file, then run `leetcode <cmd> <id>'.
 #
-#   leetcode-code <id> test   < solution.rkt
-#   leetcode-code <id> exec   < solution.rkt
-#   leetcode-code <id> watch  < solution.rkt
+#   helper/leetcode 3619 test < solution.rkt
 #
-# The CLI itself only reads the solution from its own code directory, so this
-# writes stdin to that file first, then delegates.
+# The CLI only reads the solution from its own code directory, hence the copy.
 
 set -euo pipefail
 

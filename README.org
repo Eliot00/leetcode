@@ -12,12 +12,17 @@
 
 加載 =helper/leetcode-org.el= 後，在解法塊裏用：
 
-| 按鍵     | 命令                   | 作用                                |
-|----------+------------------------+-------------------------------------|
-| =C-c l i= | =leetcode-org-id=      | 從當前標題解析題號（如 =* 3619. …=） |
-| =C-c l t= | =leetcode-org-test=    | 把塊內容送去跑樣例                  |
-| =C-c l s= | =leetcode-org-submit=  | 提交解法                            |
-| =C-c l p= | =leetcode-org-pick=    | 拉題目描述插到當前小節              |
+| 按鍵     | 命令                        | 作用                                    |
+|----------+-----------------------------+-----------------------------------------|
+| =C-c l m= | =imenu=                    | 按難度展開題庫，選中即插入題目和代碼塊   |
+| =C-c l f= | =leetcode-org-choose=      | 按名字模糊搜題並插入                    |
+| =C-c l p= | =leetcode-org-insert-problem= | 按題號插入題目                       |
+| =C-c l i= | =leetcode-org-id=          | 從當前標題解析題號（如 =* 3619. …=）    |
+| =C-c l t= | =leetcode-org-test=        | 把塊內容送去跑樣例                      |
+| =C-c l s= | =leetcode-org-submit=      | 提交解法                                |
+
+題庫讀自 CLI 的本地緩存 =~/.leetcode/Problems=。索引按需建立，緩存更新後用
+=M-x leetcode-org-refresh-index= 刷新。
 
 初始化：
 
