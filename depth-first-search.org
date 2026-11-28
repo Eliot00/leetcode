@@ -1,5 +1,14 @@
 #+TITLE: DFS
 
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path (expand-file-name "helper" default-directory))
+(require 'leetcode-org)
+#+END_SRC
+
+#+RESULTS:
+: leetcode-org
+
 #+BEGIN_SRC scheme :session
 (add-to-load-path ".")
 (use-modules (srfi srfi-64) (helper iteration))
@@ -246,3 +255,41 @@
 
 #+RESULTS:
 : #<unspecified>
+
+* 463. 岛屿的周长
+:PROPERTIES:
+:LEETCODE_STATUS: Accepted
+:LEETCODE_RUNTIME: 9 ms
+:LEETCODE_MEMORY: 134.2 MB
+:LEETCODE_RUNTIME_PCT: 100
+:LEETCODE_MEMORY_PCT: 100
+:LEETCODE_SUBMITTED: 2026-11-28 20:17
+:END:
+
+可以不用DFS
+
+#+BEGIN_SRC scheme
+(define (island-perimeter grid)
+  (let* ([grid (list->vector (map list->vector grid))]
+         [m (vector-length grid)]
+         [n (vector-length (vector-ref grid 0))])
+    (define (count i j)
+      (cond [(< i 0) 1]
+            [(>= i m) 1]
+            [(< j 0) 1]
+            [(>= j n) 1]
+            [(= 0 (vector-ref (vector-ref grid i) j)) 1]
+            [(= 2 (vector-ref (vector-ref grid i) j)) 0]
+            [else (begin
+                    (vector-set! (vector-ref grid i) j 2)
+                    (+ (count i (+ j 1))
+                       (count i (- j 1))
+                       (count (+ i 1) j)
+                       (count (- i 1) j)))]))
+    (for*/fold ([ans 0])
+               ([i (in-range m)]
+                [j (in-range n)]
+                #:when (= 1 (vector-ref (vector-ref grid i) j)))
+      (+ ans (count i j)))))
+#+END_SRC
+
