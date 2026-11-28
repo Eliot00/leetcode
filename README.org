@@ -10,19 +10,40 @@
 
 ** 提交到 LeetCode
 
-加載 =helper/leetcode-org.el= 後，在解法塊裏用：
+子標題（例如 =** 思路=、=*** 代碼=）沒有題號時會繼承上層題目的題號。
 
-| 按鍵     | 命令                        | 作用                                    |
-|----------+-----------------------------+-----------------------------------------|
-| =C-c l m= | =imenu=                    | 按難度展開題庫，選中即插入題目和代碼塊   |
-| =C-c l f= | =leetcode-org-choose=      | 按名字模糊搜題並插入                    |
-| =C-c l p= | =leetcode-org-insert-problem= | 按題號插入題目                       |
-| =C-c l i= | =leetcode-org-id=          | 從當前標題解析題號（如 =* 3619. …=）    |
-| =C-c l t= | =leetcode-org-test=        | 把塊內容送去跑樣例                      |
-| =C-c l s= | =leetcode-org-submit=      | 提交解法                                |
+| 按鍵    | 命令                        | 作用                                 |
+|---------+-----------------------------+--------------------------------------|
+| =C-c l d= | =leetcode-org-show-problem=   | 在右側窗口顯示題目描述（不改動 org） |
+| =C-c l t= | =leetcode-org-test=           | 把當前代碼塊送去跑樣例               |
+| =C-c l s= | =leetcode-org-submit=         | 提交解法                             |
+| =C-c l o= | =leetcode-org-browse-problem= | 在瀏覽器打開題目頁                   |
+| =C-c l i= | =leetcode-org-id=             | 顯示/補齊當前題號                    |
+| =C-c l p= | =leetcode-org-insert-problem= | 按題號插入標題和空代碼塊             |
+| =C-c l f= | =leetcode-org-choose=         | 按名字模糊搜題並插入                 |
+| =C-c l m= | =imenu=                       | 按難度展開題庫                       |
+| =C-c l q= | =leetcode-org-quit-windows=   | 關閉描述和結果窗口                   |
+| =C-c l r= | =leetcode-org-record-result=  | 把最後一次提交結果補寫回 org         |
 
-題庫讀自 CLI 的本地緩存 =~/.leetcode/Problems=。索引按需建立，緩存更新後用
-=M-x leetcode-org-refresh-index= 刷新。
+描述窗口裏 =g= 刷新、​=o= 打開網頁、​=t= 測試、​=s= 提交；結果窗口裏 =g= 重跑、
+=r= 補寫結果。
+測試/提交時光標放在解法塊內即可，若不在塊內則取當前條目裏的第一個代碼塊。
+
+提交成功後會把結果寫回標題的 property drawer，並保留一行可見的結果：
+
+#+BEGIN_EXAMPLE
+:PROPERTIES:
+:LEETCODE_STATUS: Accepted
+:LEETCODE_RUNTIME: 12 ms
+:LEETCODE_MEMORY: 42.1 MB
+:LEETCODE_RUNTIME_PCT: 88.5
+:LEETCODE_MEMORY_PCT: 55
+:LEETCODE_SUBMITTED: 2026-11-28 20:00
+:END:
+#+LEETCODE_RESULT: 2026-11-28 20:00 | Accepted | 12 ms (88.5%) | 42.1 MB (55%)
+#+END_EXAMPLE
+
+不想要這行可見結果時，把 =leetcode-org-record-result-line= 設為​=nil=​。
 
 初始化：
 

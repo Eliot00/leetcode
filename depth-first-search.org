@@ -18,6 +18,15 @@
 : #<unspecified>
 
 * 200. 岛屿数量
+:PROPERTIES:
+:LEETCODE_STATUS: Accepted
+:LEETCODE_RUNTIME: 327 ms
+:LEETCODE_MEMORY: 135.3 MB
+:LEETCODE_RUNTIME_PCT: 100
+:LEETCODE_MEMORY_PCT: 0
+:LEETCODE_SUBMITTED: 2026-11-28 20:29
+:END:
+#+LEETCODE_RESULT: 2026-11-28 20:29 | Accepted | 327 ms (100%) | 135.3 MB (0%)
 
 #+BEGIN_SRC scheme :session
 (define (num-islands grid)
